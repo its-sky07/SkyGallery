@@ -1,0 +1,27 @@
+// import Register from "./components/Register";
+import { Toaster } from "react-hot-toast";
+import { Outlet } from "react-router-dom";
+import Navbar from "./components/Navbar";
+// import { useOutletContext } from "react-router-dom";
+import { useState } from "react";
+import { userdetail } from "./Context/Context";
+
+export default function App() {
+
+  // const context =useOutletContext()
+const [user, setuser] = useState()
+  const [isloggedin, setisloggedin] = useState(false)
+  return (
+    <><userdetail.Provider value={{ user,setuser}}>
+      <Toaster toastOptions={{ className: 'mt-20' }} />
+      <Navbar islog={isloggedin} />
+      <Outlet context={ {isloggedin,setisloggedin} } />
+      </userdetail.Provider>
+
+    </>
+  )
+
+
+
+
+}
