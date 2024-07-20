@@ -35,7 +35,8 @@ function Login() {
        
         headers:{
           "Content-Type":"application/json"
-        }
+        },
+        withCredentials: true
       })
       console.log(response.data)
       setuser(response.data)
