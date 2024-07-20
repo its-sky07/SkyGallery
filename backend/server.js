@@ -16,7 +16,8 @@ app.use(cookieParser())
 
 // Middleware to parse JSON
 app.use(cors({
-  origin: '*' // specify the frontend URL
+  origin: 'http://localhost:5173', // Don't use wildcard '*' instead specify frontend url
+  credentials: true
 }))
 
 app.use("/user", userroute)

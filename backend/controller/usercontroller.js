@@ -51,8 +51,8 @@ const Loginuser = async (req, res) => {
     res.status(200).cookie('accestoken', token, {
       maxAge: 900000, // 15 minutes
       httpOnly:true, // make the cookie visible in the browser
-      secure: true, // set the secure flag
-      sameSite: 'none' // set the same-site flag
+      secure: process.env.NODE_ENV === 'production', // Only set to true in production
+      sameSite: 'None'  // set the same-site flag
     }).json({msg:"ho gya login"});
 
     if (!isMatch) {
