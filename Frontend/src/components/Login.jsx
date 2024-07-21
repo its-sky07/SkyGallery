@@ -41,7 +41,7 @@ function Login() {
       console.log(response.data)
       setuser(response.data)
 
-      if (response.data.msg ==="ho gya login") {
+      if (response.status ===200) {
         toast.success("login succesfully")
         navigate("/")
         context.setisloggedin(true)

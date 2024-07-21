@@ -46,14 +46,15 @@ const Loginuser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-      const token = 'logintokenstore'
+    const token = jwt.sign({ _id: user._id }, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD', { expiresIn: '10d' });
+  
   
     res.status(200).cookie('accestoken', token, {
       maxAge: 900000, // 15 minutes
       httpOnly:true, // make the cookie visible in the browser
       secure: process.env.NODE_ENV === 'production', // Only set to true in production
       sameSite: 'None'  // set the same-site flag
-    }).json({msg:"ho gya login"});
+    }).send(user);
 
     if (!isMatch) {
       return res.status(400).send('Invalid email or password');
@@ -82,8 +83,10 @@ const profileimage = async (req, res) => {
 
     await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
-        avatar: avatar // Assuming the `uploadoncloudinary` function returns an object with a `url` property
-      }
+        avatar: avatar 
+      },
+        new: true
+      
     });
 
     console.log(req.user._id);
