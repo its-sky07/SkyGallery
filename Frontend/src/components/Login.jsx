@@ -32,11 +32,8 @@ function Login() {
     }
     try {
       const response = await axios.post('http://localhost:3000/user/login', formData,{
-       
-        headers:{
-          "Content-Type":"application/json"
-        },
-        withCredentials: true
+       withCredentials: true
+      
       })
       console.log(response.data)
       setuser(response.data)

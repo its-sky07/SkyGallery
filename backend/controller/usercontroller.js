@@ -46,13 +46,13 @@ const Loginuser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ _id: user._id }, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD', { expiresIn: '10d' });
+    const token = jwt.sign({ _id: user._id }, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD', { expiresIn:"1d" });
   
   
-    res.status(200).cookie('accestoken', token, {
-      maxAge: 900000, // 15 minutes
+    res.status(200).cookie('accesstoken', token, {
+     // 15 minutes
       httpOnly:true, // make the cookie visible in the browser
-      secure: process.env.NODE_ENV === 'production', // Only set to true in production
+      secure: true, // Only set to true in production
       sameSite: 'None'  // set the same-site flag
     }).send(user);
 

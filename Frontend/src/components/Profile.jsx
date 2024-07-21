@@ -25,7 +25,7 @@ const handleUpload = async (e) => {
 
   try {
     console.log(selectedFile)
-    const response = await axios.post('http://localhost:3000/user/uploadprofileimg',formData);
+    const response = await axios.post('http://localhost:3000/user/uploadprofileimg',formData,{withCredentials:true});
     
     console.log(response.data)
     toast.success("file updoaded");
@@ -46,7 +46,7 @@ const handleUpload = async (e) => {
                 <h1 className="username">{user.username}</h1>
                 <h2 className="fullname">{user.fullname}</h2>
 
-                <form onSubmit={handleUpload} >
+                <form method='POST' onSubmit={handleUpload} >
                 <input type="file" name='profileimage'   onChange={handleFileChange} />
                 <input type="submit"  value='update image'/>
                 </form>
