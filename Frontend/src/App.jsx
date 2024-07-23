@@ -9,7 +9,7 @@ import { userdetail } from "./Context/Context";
 export default function App() {
 
   // const context =useOutletContext()
-const [user, setuser] = useState()
+const [user, setuser] = useState(null)
   const [isloggedin, setisloggedin] = useState(false)
   return (
     <><userdetail.Provider value={{ user,setuser}}>

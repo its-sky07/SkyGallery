@@ -2,6 +2,7 @@ import UserModel from '../models/usermodel.js';
 import bcrypt from 'bcrypt';
 import uploadoncloudinary from '../util/cloudinary.js';
 import jwt from 'jsonwebtoken';
+import usermodel from '../models/usermodel.js';
 
 const registerUser = async (req, res) => {
   const { username, fullname, email, password } = req.body;
@@ -39,7 +40,7 @@ const Loginuser = async (req, res) => {
     if (!email || !password) {
       return res.status(400).send('All fields are required');
     }
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).populate("post");
 
     if (!user) {
       return res.status(400).send('Invalid email or password');
@@ -60,10 +61,7 @@ const Loginuser = async (req, res) => {
       return res.status(400).send('Invalid email or password');
     }
 
-    // const token = jwt.sign({ _id: user._id }, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD', { expiresIn: '10d' });
-    // If login is successful
   
-    
   } catch (err) {
     res.status(500).send('Error logging in user');
     console.error(err);
@@ -81,20 +79,33 @@ const profileimage = async (req, res) => {
   try {
     const avatar = await uploadoncloudinary(localAvatarPath);
 
-    await UserModel.findByIdAndUpdate(req.user._id, {
+    const user= await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
         avatar: avatar 
       },
-        new: true
+      new:true
       
-    });
+    })
+   await user.save()
+   
 
     console.log(req.user._id);
-    return res.status(200).send("Avatar updated successfully");
+    return res.status(200).send(user);
   } catch (err) {
     res.status(500).send('Error uploading avatar');
     console.error(err);
   }
 };
 
-export { registerUser, Loginuser, profileimage };
+
+const userpost=async(req,res)=>{
+  const user=await usermodel.findById(req.user._id).populate("post")
+ 
+  return res.send(user.post)
+  
+
+
+
+}
+
+export { registerUser, Loginuser, profileimage,userpost };

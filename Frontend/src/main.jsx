@@ -7,6 +7,7 @@ import Login from './components/Login.jsx'
 import App from './App.jsx'
 import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'
+import UploadPost from './components/Uploadpost.jsx'
 // import App from './App.jsx'
 
 
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
     <Route path='Register' element={<Register />} />,
     <Route path='Login' element={<Login/>} />
     <Route path='Profile' element={<Profile/>} />
+    <Route path='UploadPost' element={<UploadPost/>} />
     </Route>
 
   )
