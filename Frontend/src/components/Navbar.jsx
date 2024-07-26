@@ -1,8 +1,14 @@
 // import React from 'react';
 // import { BsPersonFill } from "react-icons/bs";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ islog }) => {
+const Navbar = ({ islog,search,setsearch }) => {
+
+ 
+  console.log(search)
+
+
 
   return (<>
     <nav className="bg-white shadow-md">
@@ -11,6 +17,8 @@ const Navbar = ({ islog }) => {
         <div className="flex items-center space-x-4">
           <input
             type="text"
+            value={search}
+            onChange={(e)=>setsearch(e.target.value)}
             placeholder="Search"
             className="border border-gray-300 rounded-md py-1 px-2"
           />

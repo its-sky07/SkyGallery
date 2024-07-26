@@ -38,14 +38,14 @@ function Login() {
       console.log(response.data)
       setuser(response.data)
 
-      if (response.status ===200) {
+      if (response.status==200) {
         toast.success("login succesfully")
         navigate("/")
         context.setisloggedin(true)
 
 
       } else {
-        toast.error(response.data)
+        toast.error("invalid userid or pasword")
       }
 
 

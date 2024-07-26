@@ -7,7 +7,7 @@ import usermodel from "../models/usermodel.js";
 
 const Allpost = async (req, res) => {
   try {
-    const posts = await Post.find().populate("user"); // Adjust the fields to be populated as needed
+    const posts = await Post.find({private:false}).populate("user"); // Adjust the fields to be populated as needed
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).send('Error fetching posts');
@@ -17,7 +17,7 @@ const Allpost = async (req, res) => {
 
 const addpost = async (req, res) => {
 
-  const { title, description } = req.body
+  const { title, description ,privacy } = req.body
 
   if (!title && !description) {
     return res.status(500).send("all fiels required")
@@ -40,6 +40,7 @@ const addpost = async (req, res) => {
       title: title,
       description: description,
       imageUrl: post,
+      private:privacy,
       user: req.user._id
     })
 

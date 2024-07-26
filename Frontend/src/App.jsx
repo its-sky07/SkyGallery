@@ -9,13 +9,15 @@ import { userdetail } from "./Context/Context";
 export default function App() {
 
   // const context =useOutletContext()
+  const [search, setsearch] = useState("")
 const [user, setuser] = useState(null)
   const [isloggedin, setisloggedin] = useState(false)
   return (
     <><userdetail.Provider value={{ user,setuser}}>
       <Toaster toastOptions={{ className: 'mt-20' }} />
-      <Navbar islog={isloggedin} />
-      <Outlet context={ {isloggedin,setisloggedin} } />
+
+      <Navbar islog={isloggedin} search={search} setsearch={setsearch}/>
+      <Outlet context={ {isloggedin,search ,setisloggedin} } />
       </userdetail.Provider>
 
     </>

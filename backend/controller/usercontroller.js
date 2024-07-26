@@ -82,8 +82,7 @@ const profileimage = async (req, res) => {
     const user= await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
         avatar: avatar 
-      },
-      new:true
+      }
       
     })
    await user.save()
@@ -99,13 +98,26 @@ const profileimage = async (req, res) => {
 
 
 const userpost=async(req,res)=>{
-  const user=await usermodel.findById(req.user._id).populate("post")
+  const user=await usermodel.findById(req.user._id).populate("post").select("-password ")
  
-  return res.send(user.post)
-  
-
-
+  return res.send(user)
 
 }
 
-export { registerUser, Loginuser, profileimage,userpost };
+const logoutuser = (req, res) => {
+  console.log('Logout request received');
+
+  return res.status(200)
+    .clearCookie('accesstoken', {
+      httpOnly:true, // make the cookie visible in the browser
+      secure: true, // Only set to true in production
+      sameSite: 'None' 
+    })  
+    .json({ message: 'Logged out successfully' });
+ 
+};
+
+
+
+
+export { registerUser, Loginuser, profileimage,userpost,logoutuser };

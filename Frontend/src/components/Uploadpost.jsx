@@ -7,10 +7,11 @@ const UploadPost = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+const [privacy, setprivacy] = useState(false)
 
 
 
-  const navigate =useNavigate()
+  const navigate = useNavigate()
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -26,6 +27,7 @@ const UploadPost = () => {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('post', selectedFile);
+    formData.append('privacy', privacy);
 
     try {
       const response = await axios.post('http://localhost:3000/posts/upload', formData, { withCredentials: true });
@@ -40,6 +42,10 @@ const UploadPost = () => {
       toast.error("Error uploading post.");
     }
   };
+  const handleprivacy=(e)=>{
+    setprivacy(e.target.checked);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -80,6 +86,11 @@ const UploadPost = () => {
               className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+          <p className='flex gap-2 '>
+            <input type="checkbox" name="checkprvcy"  onChange={handleprivacy} id="checkprvcy" />
+            <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">Post private</label>
+          </p>
+
           <div>
             <button
               type="submit"

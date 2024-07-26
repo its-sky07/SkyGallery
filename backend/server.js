@@ -34,6 +34,7 @@ app.get("/posts",Allpost)
 
 
 
+
 // MongoDB connection URLmongodb+srv://akashdinanathyadav
 const mongoURI = "mongodb+srv://rohit123:rohit123@cluster0.dylmkfy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
