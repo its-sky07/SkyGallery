@@ -11,13 +11,14 @@ export default function App() {
   // const context =useOutletContext()
   const [search, setsearch] = useState("")
 const [user, setuser] = useState(null)
-  const [isloggedin, setisloggedin] = useState(false)
+  const [isloggedin, setisloggedin] = useState(true)
+  // const [singlepost, setsinglepost] = useState([])
   return (
     <><userdetail.Provider value={{ user,setuser}}>
       <Toaster toastOptions={{ className: 'mt-20' }} />
 
       <Navbar islog={isloggedin} search={search} setsearch={setsearch}/>
-      <Outlet context={ {isloggedin,search ,setisloggedin} } />
+      <Outlet context={ {isloggedin,search,setisloggedin} } />
       </userdetail.Provider>
 
     </>

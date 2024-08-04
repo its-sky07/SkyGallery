@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 // import bodyParser from 'body-parser';
 import userroute from './routes/userroute.js'
 import postroute from './routes/postroute.js'
+import commentroute from './routes/commentroute.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { Allpost } from './controller/postcontroller.js'
@@ -26,6 +27,7 @@ app.use(express.static("public"))
 
 app.use("/user", userroute)
 app.use("/posts",postroute)
+app.use("/comments",commentroute)
 
 app.get('/', (req, res) => {
   res.send('hello from backend')

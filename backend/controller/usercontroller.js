@@ -54,7 +54,7 @@ const Loginuser = async (req, res) => {
      // 15 minutes
       httpOnly:true, // make the cookie visible in the browser
       secure: true, // Only set to true in production
-      sameSite: 'None'  // set the same-site flag
+      sameSite: 'none'  // set the same-site flag
     }).send(user);
 
     if (!isMatch) {
@@ -107,11 +107,10 @@ const userpost=async(req,res)=>{
 const logoutuser = (req, res) => {
   console.log('Logout request received');
 
-  return res.status(200)
-    .clearCookie('accesstoken', {
+   res.status(200).clearCookie('accesstoken', {
       httpOnly:true, // make the cookie visible in the browser
-      secure: true, // Only set to true in production
-      sameSite: 'None' 
+      secure:true, // Only set to true in production
+      sameSite: 'none' 
     })  
     .json({ message: 'Logged out successfully' });
  

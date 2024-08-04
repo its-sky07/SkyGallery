@@ -2,12 +2,15 @@ import React, { useState, useContext, useEffect, useMemo } from 'react';
 import axios from 'axios';
 // import { userdetail } from '../Context/Context';
 import toast from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 const Profile = () => {
+
+
   // const { user } = useContext(userdetail);
   const [userPosts, setUserPosts] = useState([]);
   const [userdetail, setuserdetail] = useState([])
+
 
   // const [image, setImage] = useState(userdetail.avatar);
 
@@ -36,7 +39,7 @@ const Profile = () => {
   };
 
 
- 
+
   useMemo(() => {
     const fetchUserData = async () => {
       try {
@@ -62,7 +65,7 @@ const Profile = () => {
   const handleLogout = async () => {
 
     try {
-     await axios.get('/user/logout', { withCredentials: true });
+      await axios.get('http://localhost:3000/user/logout', { withCredentials: true });
       navigate('/')
 
       toast.success("logout succesfully")
@@ -72,6 +75,28 @@ const Profile = () => {
 
     }
   };
+  const handleDeletePost = async (postId) => {
+    try {
+
+      const res = await axios.delete(`http://localhost:3000/posts/${postId}`, { withCredentials: true })
+      setUserPosts(userPosts.filter((post) => (post._id !== postId)))
+      toast.success("Post deleted successfully")
+      console.log("post deleted")
+
+    } catch (error) {
+      console.error("error on deleting post", error)
+      toast.error("unable to delete post")
+
+    }
+
+  }
+
+  const opensinglepage = (postId) => {
+
+
+    navigate(`/Singlepostpage/${postId}`)
+
+  }
 
 
   return (
@@ -109,7 +134,9 @@ const Profile = () => {
             userPosts.map((item) => (
               <div key={item._id} className="p-2 rounded-md md:w-80 h-2/4 bg-red-200 sm:mb-0 mb-6 m-1">
                 <div className="rounded-lg h-64 overflow-hidden">
-                  <img alt="content" className="object-cover object-center h-full w-full" src={item.imageUrl} />
+                  <Link to="#" onClick={() => opensinglepage(item._id)}>
+                    <img alt="content" className="object-cover object-center h-full w-full" src={item.imageUrl} />
+                  </Link>
                 </div>
                 <h2 className="text-xl font-medium title-font text-gray-900 mt-5">{item.title}</h2>
                 <p className="text-base leading-relaxed mt-2">{item.description}</p>
@@ -118,6 +145,10 @@ const Profile = () => {
                     <path d="M5 12h14M12 5l7 7-7 7"></path>
                   </svg>
                 </a>
+
+                <button className="text-red-500 inline-flex items-center mt-3" onClick={() => handleDeletePost(item._id)}>
+                  Delete Post
+                </button>
               </div>
             ))
           ) : (

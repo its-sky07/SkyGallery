@@ -3,11 +3,14 @@
 import Post from "../models/postmodel.js";
 import uploadOnCloudinary from "../util/cloudinary.js";
 import usermodel from "../models/usermodel.js";
+import { set } from "mongoose";
+import { Comment } from "../models/comment.js";
+import { compareSync } from "bcrypt";
 
 
 const Allpost = async (req, res) => {
   try {
-    const posts = await Post.find({private:false}).populate("user"); // Adjust the fields to be populated as needed
+    const posts = await Post.find({ private: false }).populate("user"); // Adjust the fields to be populated as needed
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).send('Error fetching posts');
@@ -17,7 +20,7 @@ const Allpost = async (req, res) => {
 
 const addpost = async (req, res) => {
 
-  const { title, description ,privacy } = req.body
+  const { title, description, privacy } = req.body
 
   if (!title && !description) {
     return res.status(500).send("all fiels required")
@@ -30,7 +33,7 @@ const addpost = async (req, res) => {
   }
   const localpostPath = req.file.path;
   //  console.log(localAvatarPath);
-
+  const user = await usermodel.findById(req.user._id)
   try {
     const post = await uploadOnCloudinary(localpostPath);
 
@@ -40,29 +43,117 @@ const addpost = async (req, res) => {
       title: title,
       description: description,
       imageUrl: post,
-      private:privacy,
+      private: privacy,
       user: req.user._id
     })
 
     await postdata.save()
+    const finalpost = await Post.findById(postdata._id).populate("user")
 
-    const user = await usermodel.findById(req.user._id)
     user.post.push(postdata._id)
     await user.save()
 
 
     //  console.log(req.user._id);
-    return res.status(200).send(postdata);
+    return res.status(200).send(finalpost);
   } catch (err) {
     res.status(500).send('Error uploading avatar');
     console.error(err);
   }
 
+}
+
+
+const deletepost = async (req, res) => {
+  const postid = req.params.id;
+
+  try {
+    const post = await Post.findById(postid)
+
+    if (!post) return res.status(404).send("post not found")
+
+    if (post.user.toString() !== req.user._id.toString()) {
+      return res.status(401).send("you are not authorized to delete this post")
+    }
+
+    await Post.findByIdAndDelete(postid)
+    return res.status(200).send("post deleted")
 
 
 
 
-  
+
+  } catch (error) {
+    res.status(500).send("error deleting post")
+    console.error("post not deleted")
+
+  }
+
+
+
 
 }
-export { addpost   , Allpost}
+
+
+const postinfo = async (req, res) => {
+  const postid = req.params.id
+
+  const post = await Post.findById(postid).populate("user")
+  if (!post) return res.status(404).send("post not found")
+
+  res.status(200).send(post)
+
+
+
+
+}
+const updatepostinfo = async (req, res) => {
+  const postid = req.params.id
+
+  const { title, description } = req.body
+  const post = await Post.findByIdAndUpdate(postid, {
+    $set: {
+      title: title,
+      description: description
+    },
+    new: true
+
+  })
+  await post.save()
+  res.status(200).send(post)
+
+}
+
+const postcomment = async (req, res) => {
+  const postid = req.params.id
+  const { text } = req.body
+
+
+  if (!text) {
+
+    return res.status(400).semd("no comment found")
+  }
+  const commentog = new Comment({
+    text: text,
+    user: req.user._id,
+    post: postid
+
+  })
+  await commentog.save()
+
+  const commentdata = await Comment.findById(commentog._id).populate("user")
+  res.status(200).send(commentdata)
+}
+
+const userpostcomment = async (req, res) => {
+  const postid = req.params.id
+  const com = await Comment.find({ post: postid }).populate("user")
+  console.log(com)
+  res.status(200).send(com)
+
+
+
+}
+
+
+export { addpost, Allpost, deletepost, postinfo, updatepostinfo, postcomment, userpostcomment }

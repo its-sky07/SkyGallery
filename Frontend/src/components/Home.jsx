@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 
 
 function Home() {
@@ -9,8 +9,7 @@ function Home() {
 
     const [posts, setposts] = useState([])
     const [FilteredPosts, setFilteredPosts] = useState([])
-
-
+    const navigate = useNavigate()
 
     useEffect(() => {
         try {
@@ -26,7 +25,6 @@ function Home() {
         }
     }, [])
 
-    
     useEffect(() => {
         const filterPosts = () => {
             const filtered = FilteredPosts.filter((item) =>
@@ -36,20 +34,22 @@ function Home() {
         };
         filterPosts();
     }, [context.search]);
+
+    const handlepostinfo = (postId) => {
+        navigate(`/Singlepostpage/${postId}`)
+    }
+
     return (
         <>
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {posts.map((item, index) => (
                         <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
-                            <img src={item.imageUrl} alt="Placeholder" className="w-full h-full object-cover" />
+                            <Link to="#" onClick={() => handlepostinfo(item._id)}>   <img src={item.imageUrl} alt="Placeholder" className="w-full h-full object-cover" /></Link>
                         </div>
                     ))}
                 </div>
             </div>
-
-
-
         </>)
 }
 export default Home

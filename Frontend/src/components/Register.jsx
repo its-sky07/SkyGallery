@@ -19,7 +19,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username,fullname , email, password ,} = formData;
+    const { username,fullname , email, password } = formData;
 
     if (!username ||!fullname || !email || !password) {
       toast.error('Please fill in all fields');
