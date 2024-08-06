@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 const Profile = () => {
+  const context=useOutletContext()
 
 
   // const { user } = useContext(userdetail);
@@ -40,7 +41,11 @@ const Profile = () => {
 
 
 
-  useMemo(() => {
+
+
+
+  useEffect(() => {
+
     const fetchUserData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/user/posts', { withCredentials: true });
@@ -54,7 +59,7 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [userdetail]);
 
 
 
@@ -66,7 +71,8 @@ const Profile = () => {
 
     try {
       await axios.get('http://localhost:3000/user/logout', { withCredentials: true });
-      navigate('/')
+      navigate('/login')
+      context.setisloggedin(false)
 
       toast.success("logout succesfully")
 

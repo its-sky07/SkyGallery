@@ -36,7 +36,7 @@ function Login() {
       
       })
       console.log(response.data)
-      setuser(response.data)
+      // setuser(response.data)
 
       if (response.status==200) {
         toast.success("login succesfully")

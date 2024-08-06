@@ -9,8 +9,6 @@ import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'
 import UploadPost from './components/Uploadpost.jsx'
 import Singlepostpage from './components/Singlepostdeteails.jsx'
-import Editmodal from './components/Editmodal.jsx'
-// import App from './App.jsx'
 
 
 
@@ -25,7 +23,6 @@ const router = createBrowserRouter(
     <Route path='Profile' element={<Profile/>} />
     <Route path='UploadPost' element={<UploadPost/>} />
     <Route path='Singlepostpage/:postid' element={<Singlepostpage/>} />
-    <Route path='Editmodal' element={<Editmodal/>} />
     </Route>
 
   )

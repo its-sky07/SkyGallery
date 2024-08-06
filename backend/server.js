@@ -8,6 +8,8 @@ import commentroute from './routes/commentroute.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { Allpost } from './controller/postcontroller.js'
+import verifytoken from './middleware/Auth.js'
+import usermodel from './models/usermodel.js'
 
 
 const app = express()
@@ -28,6 +30,12 @@ app.use(express.static("public"))
 app.use("/user", userroute)
 app.use("/posts",postroute)
 app.use("/comments",commentroute)
+app.get('/auth/user',verifytoken,async(req,res)=>{
+const user= await usermodel.findById(req.user._id)
+res.status(200).json(user)
+
+
+} )
 
 app.get('/', (req, res) => {
   res.send('hello from backend')

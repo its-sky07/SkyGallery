@@ -18,16 +18,24 @@ const postSchema = new Schema({
     type: String,
     required: true,
   },
-  private:{
+  private: {
     type: Boolean,
     default: false,
-    required:true
+    required: true
   },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
+  likes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  }]
 }, {
   timestamps: true,
 });

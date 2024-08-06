@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 const SinglePostPage = () => {
+  const context = useOutletContext()
+
   const { postid } = useParams();
   const [Post, setPost] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,15 +13,31 @@ const SinglePostPage = () => {
   const [newDescription, setNewDescription] = useState("");
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
+  const [isliked, setisliked] = useState(false)
+  const [likelength, setlikelength] = useState(null)
+  const [loading, setloading] = useState(true)
+  const [opendeletemodal, setopendeletemodal] = useState(false)
+  const [commettodelete, setcommettodelete] = useState(null)
+  const [deletepostid, setdeletepostid] = useState(null)
+  const [opendeletepostmodal, setopendeletepostmodal] = useState(false)
+  const [privacy, setprivacy] = useState(true)
+
+
+
 
 
   const navigate = useNavigate()
+
+  const handleprivacy=(e)=>{
+    setprivacy(e.target.checked);
+  };
   const handleNewDetails = async () => {
     try {
       const updatedPost = {
 
         title: newTitle,
-        description: newDescription
+        description: newDescription,
+        privacy:privacy
       };
       const response = await axios.put(`http://localhost:3000/posts/updatepostinfo/${postid}`, updatedPost, { withCredentials: true });
       setPost(response.data);
@@ -28,23 +46,37 @@ const SinglePostPage = () => {
     } catch (error) {
       console.error('Error updating post', error);
       toast.error("Error updating post.");
+    } finally {
+      setloading(false)
     }
   };
+
+
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/posts/${postid}`, { withCredentials: true });
         setPost(response.data);
+        setlikelength(response.data.likes.length);
+        if(response.data.privacy){
+          setprivacy(true)
+        }
+        if (context.user) {
+          setisliked(response.data.likes.includes(context.user._id));
+        }
         console.log(response.data);
       } catch (error) {
         console.error('Error fetching post', error);
         toast.error("Error fetching post.");
+      } finally {
+        setloading(false)
       }
     };
 
     fetchPost();
-  }, []);
+  }, [postid, context.user, isliked]);
+
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -85,12 +117,13 @@ const SinglePostPage = () => {
 
 
     try {
-      const res = await axios.delete(`http://localhost:3000/comments/${commentid}`, { withCredentials: true })
+      const res = await axios.delete(`http://localhost:3000/posts/${postid}/comment/${commentid}`, { withCredentials: true })
       if (res.status === 200) {
 
         setAllComments(prevComments => prevComments.filter(comment => comment._id !== commentid));
 
         toast.success("comment deleted succesfully")
+        togglecommentdelete()
 
       }
     } catch (error) {
@@ -125,8 +158,53 @@ const SinglePostPage = () => {
     }
   };
 
+  // const togglelike=()=>{
+  //   setisliked(!isliked)
 
 
+  // }
+
+
+
+  const handlelike = async () => {
+    try {
+      if (isliked) {
+        const dislike = await axios.post(`http://localhost:3000/posts/${postid}/unlikes`, {}, { withCredentials: true });
+        toast.success(dislike.data);
+
+      } else {
+        const like = await axios.post(`http://localhost:3000/posts/${postid}/likes`, {}, { withCredentials: true });
+        toast.success(like.data);
+
+      }
+      setisliked(!isliked)
+    } catch (error) {
+      console.error('Error handling like/unlike', error);
+      toast.error("Error handling like/unlike.");
+    }
+  };
+
+  const togglecommentdelete = (commentid) => {
+    setopendeletemodal(!opendeletemodal)
+    setcommettodelete(commentid)
+
+    console.log(opendeletemodal)
+  }
+  const togglepostdelete = (postid) => {
+    setdeletepostid(postid)
+    setopendeletepostmodal(!opendeletepostmodal)
+
+  }
+  const comfirmdelete = () => {
+    handledeletecomment(commettodelete)
+
+  }
+  const comfirmdeletepost = () => {
+    handledeletepost(deletepostid)
+  }
+
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="flex justify-center items-center min-h-screen w-full bg-gray-100">
@@ -138,6 +216,37 @@ const SinglePostPage = () => {
             </div>
           )}
           <div className=" justify-end mb-4 flex gap-2">
+
+
+            {/* like */}
+
+            {(isliked) ? <svg
+              onClick={handlelike}
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="red"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg> : <svg
+              onClick={handlelike}
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12.1 18.55L12 18.65l-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 2.89-3.14 5.74-7.9 10.05z"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>}
+            {likelength}
 
             {/* downloadbutton */}
             <svg
@@ -157,23 +266,33 @@ const SinglePostPage = () => {
             </svg>
 
             {/* deletebutton */}
-            <svg onClick={() => handledeletepost(postid)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8 text-red-700">
+
+            {context.user && Post.user && context.user._id === Post.user._id && (<>   <svg onClick={() => togglepostdelete(postid)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8 text-red-700">
               <path d="M3 6h18" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6h14z" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M10 11v6m4-6v6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
 
-            <button
-              onClick={toggleModal}
-              className="bg-blue-700 flex text-white p-2 rounded-lg"
-              type="button"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 20" fill="currentColor" className="w-6 h-6">
-                <path d="M21.7,2.3c-0.4-0.4-1-0.4-1.4,0L18.4,4.2c-0.4,0.4-0.4,1,0,1.4l1.4,1.4c0.4,0.4,1,0.4,1.4,0l1.9-1.9c0.4-0.4,0.4-1,0-1.4 L21.7,2.3z M17.3,6.7L4.1,19.9c-0.2,0.2-0.3,0.4-0.4,0.7l-1,4.1c-0.1,0.5,0.4,1,1,0.9l4.1-1c0.3-0.1,0.5-0.2,0.7-0.4L20.7,10.1 L17.3,6.7z" />
-              </svg>
-              Edit
-            </button>
+              <button
+                onClick={toggleModal}
+                className="bg-blue-700 flex text-white p-2 rounded-lg"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 20" fill="currentColor" className="w-6 h-6">
+                  <path d="M21.7,2.3c-0.4-0.4-1-0.4-1.4,0L18.4,4.2c-0.4,0.4-0.4,1,0,1.4l1.4,1.4c0.4,0.4,1,0.4,1.4,0l1.9-1.9c0.4-0.4,0.4-1,0-1.4 L21.7,2.3z M17.3,6.7L4.1,19.9c-0.2,0.2-0.3,0.4-0.4,0.7l-1,4.1c-0.1,0.5,0.4,1,1,0.9l4.1-1c0.3-0.1,0.5-0.2,0.7-0.4L20.7,10.1 L17.3,6.7z" />
+                </svg>
+                Edit
+              </button></>)
+
+            }
+
+
+
+
+
+
+
           </div>
           <h2 className="text-2xl font-bold mb-2">{Post.title}</h2>
           <p className="text-gray-700 mb-4">{Post.description}</p>
@@ -210,17 +329,23 @@ const SinglePostPage = () => {
                   <h4 className="text-blue-500 font-semibold">@{item.user.username}</h4>
                   <p className="break-words">{item.text}</p>
                 </div>
-                <svg onClick={() => handledeletecomment(item._id)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8 text-red-700">
-                  <path d="M3 6h18" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6h14z" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M10 11v6m4-6v6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+
+
+                {context.user && Post.user && (item.user._id == context.user._id || Post.user._id == context.user._id) &&
+                  (<svg onClick={() => togglecommentdelete(item._id)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8 text-red-700">
+                    <path d="M3 6h18" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6h14z" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10 11v6m4-6v6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>)
+                }
               </div>
             ))}
           </div>}
 
+
         </div>
+
 
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -268,6 +393,10 @@ const SinglePostPage = () => {
                   className="w-full p-2 border border-gray-300 rounded-md"
                 ></textarea>
               </div>
+              <p className='flex gap-2 '>
+            <input type="checkbox" name="checkprvcy"  onChange={handleprivacy} id="checkprvcy" />
+            <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">Post private</label>
+          </p>
               <div className="flex items-center p-4 border-t border-gray-200 rounded-b">
                 <button
                   type="button"
@@ -287,7 +416,53 @@ const SinglePostPage = () => {
             </div>
           </div>
         )}
+
+
       </div>
+      {opendeletemodal && (
+        <div class="absolute p-4 w-full max-w-md max-h-full">
+          <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
+              <svg onClick={togglecommentdelete} class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+              <button onClick={togglecommentdelete} class="sr-only">Close modal</button>
+            </button>
+            <div class="p-4 md:p-5 text-center">
+              <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this product?</h3>
+              <button onClick={comfirmdelete} data-modal-hide="popup-modal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                Yes, I'm sure
+              </button>
+              <button onClick={togglecommentdelete} data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {opendeletepostmodal && (
+        <div class="absolute p-4 w-full max-w-md max-h-full">
+          <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
+              <svg onClick={togglepostdelete} class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+              <button onClick={togglepostdelete} class="sr-only">Close modal</button>
+            </button>
+            <div class="p-4 md:p-5 text-center">
+              <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this product?</h3>
+              <button onClick={comfirmdeletepost} data-modal-hide="popup-modal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                Yes, I'm sure
+              </button>
+              <button onClick={togglepostdelete} data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No, cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
