@@ -7,21 +7,36 @@ const UploadPost = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-const [privacy, setprivacy] = useState(false)
+  const [privacy, setPrivacy] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
 
-
-
-  const navigate = useNavigate()
+  // Handle file selection
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Validate form fields
+  const validateForm = () => {
     if (!title || !description || !selectedFile) {
       toast.error("Please fill in all fields and select a file.");
-      return;
+      return false;
     }
+    if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error("File size exceeds 5MB.");
+      return false;
+    }
+    return true;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setLoading(true);
 
     const formData = new FormData();
     formData.append('title', title);
@@ -32,20 +47,20 @@ const [privacy, setprivacy] = useState(false)
     try {
       const response = await axios.post('http://localhost:3000/posts/upload', formData, { withCredentials: true });
       toast.success("Post uploaded successfully");
-      navigate("/profile")
+      navigate("/profile");
       // Clear the form
       setTitle('');
       setDescription('');
       setSelectedFile(null);
+      setPrivacy(false);
     } catch (error) {
       console.error('Error uploading post', error);
-      toast.error("Error uploading post.");
+      toast.error("Error uploading post. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
-  const handleprivacy=(e)=>{
-    setprivacy(e.target.checked);
-  };
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
@@ -85,17 +100,24 @@ const [privacy, setprivacy] = useState(false)
               className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <p className='flex gap-2 '>
-            <input type="checkbox" name="checkprvcy"  onChange={handleprivacy} id="checkprvcy" />
+          <p className='flex gap-2 items-center'>
+            <input 
+              type="checkbox" 
+              name="checkprvcy" 
+              onChange={(e) => setPrivacy(e.target.checked)} 
+              id="checkprvcy" 
+              checked={privacy} 
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+            />
             <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">Post private</label>
           </p>
-
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className={`w-full px-4 py-2 font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} focus:ring-blue-500`}
             >
-              Upload Post
+              {loading ? 'Uploading...' : 'Upload Post'}
             </button>
           </div>
         </form>

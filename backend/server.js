@@ -10,7 +10,9 @@ import cookieParser from 'cookie-parser'
 import { Allpost } from './controller/postcontroller.js'
 import verifytoken from './middleware/Auth.js'
 import usermodel from './models/usermodel.js'
+import  dotenv     from 'dotenv'
 
+dotenv.config()
 
 const app = express()
 app.use(cookieParser())
@@ -46,7 +48,7 @@ app.get("/posts",Allpost)
 
 
 // MongoDB connection URLmongodb+srv://akashdinanathyadav
-const mongoURI = "mongodb+srv://rohit123:rohit123@cluster0.dylmkfy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const mongoURI = process.env.MOMGOBD_URI;
 
 // Connect to MongoDB
 
@@ -55,7 +57,7 @@ mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

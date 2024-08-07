@@ -10,7 +10,7 @@ const verifytoken =async(req, res, next) => {
         return res.status(401).send('Unauthorized: No token provided');
     }
         // console.log(req.cookies.token)
-        const decoded = jwt.verify(token, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD');
+        const decoded = jwt.verify(token, process.env.JWT_SCERET_KEY);
         
          const user= await UserModel.findById(decoded._id);
 

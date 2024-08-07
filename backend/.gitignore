@@ -1,0 +1,22 @@
+# Node.js dependencies
+node_modules/
+
+# React build output
+build/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Tailwind CSS config
+tailwind.config.js
+
+# Misc
+.DS_Store
+*.swp
+
+# VS Code
+.vscode/

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 function Register() {
@@ -109,7 +109,7 @@ function Register() {
               </p>
               <hr className="w-1/2 mx-auto opacity-40" />
               <p className="text-xs mt-2 opacity-100">
-                Already on Pinterest? Log in
+                Already on Pinterest? <Link to="/login">Log in</Link>
               </p>
             </footer>
           </div>

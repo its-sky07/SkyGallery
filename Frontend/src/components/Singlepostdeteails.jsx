@@ -28,16 +28,23 @@ const SinglePostPage = () => {
 
   const navigate = useNavigate()
 
-  const handleprivacy=(e)=>{
+  const handleprivacy = (e) => {
     setprivacy(e.target.checked);
+    console.log(privacy)
   };
+
+
   const handleNewDetails = async () => {
+
     try {
+      if (!newTitle || !newDescription) {
+        return toast.error("pls fill all the filled")
+      }
       const updatedPost = {
 
         title: newTitle,
         description: newDescription,
-        privacy:privacy
+        privacy: privacy
       };
       const response = await axios.put(`http://localhost:3000/posts/updatepostinfo/${postid}`, updatedPost, { withCredentials: true });
       setPost(response.data);
@@ -59,9 +66,9 @@ const SinglePostPage = () => {
         const response = await axios.get(`http://localhost:3000/posts/${postid}`, { withCredentials: true });
         setPost(response.data);
         setlikelength(response.data.likes.length);
-        if(response.data.privacy){
-          setprivacy(true)
-        }
+
+        setprivacy(response.data.private)
+
         if (context.user) {
           setisliked(response.data.likes.includes(context.user._id));
         }
@@ -75,7 +82,7 @@ const SinglePostPage = () => {
     };
 
     fetchPost();
-  }, [postid, context.user, isliked]);
+  }, [postid, context.user, isliked, isModalOpen]);
 
 
   const toggleModal = () => {
@@ -157,15 +164,6 @@ const SinglePostPage = () => {
       console.error('Error downloading the image', error);
     }
   };
-
-  // const togglelike=()=>{
-  //   setisliked(!isliked)
-
-
-  // }
-
-
-
   const handlelike = async () => {
     try {
       if (isliked) {
@@ -204,11 +202,39 @@ const SinglePostPage = () => {
   }
 
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen">
+    <div className="w-20 h-20 border-4 border-blue-700 rounded-full border-dotted animate-spin"></div>
+  </div>;
+
+  const handleBack = () => {
+    window.history.back()
+
+  }
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full bg-gray-100">
-      <div className=" p-5 rounded-md bg-white sm:flex gap-4 shadow-md w-full max-w-5xl">
+    <div className="flex justify-center items-center min-h-screen w-full  bg-gray-100">
+
+
+      <button onClick={handleBack} className='absolute top-20 left-32 bg-blue-600 p-2 rounded-lg  text-white'>
+        <p className='flex align-middle justify-center'> <svg
+          // Example event handler
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-8 h-8"
+        >
+          <path
+            d="M19 12H5M12 19l-7-7 7-7"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg><p className='font-medium '>back</p></p>
+       
+
+      </button>
+      <div className=" p-5 rounded-md bg-white sm:flex mt-14 gap-4 shadow-md w-full max-w-5xl">
         <div className=" sm:w-3/5 w-full">
           {Post.imageUrl && (
             <div className="post-image w-full h-64 mb-4 ">
@@ -319,7 +345,7 @@ const SinglePostPage = () => {
         <div className="sm:w-1/2 flex flex-col sp  w-full">
           <h2 className="font-bold text-2xl mb-4">Comments</h2>
 
-          {(allComments.length <= 0) ? "no comment on this post" : <div className="h-96 overflow-y-scroll pr-4">
+          {(allComments.length <= 0) ? "no comment on this post" : <div className="h-96 overflow-y-scroll scroll-smooth pr-4">
             {allComments.map((item) => (
               <div key={item._id} className="bg-gray-100 rounded-xl flex justify-evenly gap-2 p-4 mb-4">
                 <div className="h-7 w-7 rounded-full overflow-hidden">
@@ -381,6 +407,7 @@ const SinglePostPage = () => {
                   placeholder="Enter new title"
                   className="w-full p-2 border border-gray-300 rounded-md"
                   value={newTitle}
+                  required
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
                 <textarea
@@ -389,14 +416,34 @@ const SinglePostPage = () => {
                   name="description"
                   id="description"
                   rows="10"
+                  required
                   placeholder="Enter new description"
                   className="w-full p-2 border border-gray-300 rounded-md"
                 ></textarea>
               </div>
-              <p className='flex gap-2 '>
-            <input type="checkbox" name="checkprvcy"  onChange={handleprivacy} id="checkprvcy" />
-            <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">Post private</label>
-          </p>
+              <div className="p-4">
+                <p className='flex items-center gap-2'>
+                  <input
+                    type="checkbox"
+                    checked={privacy}
+                    onChange={handleprivacy}
+                    id="checkprvcy"
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor="checkprvcy"
+                    className="relative inline-flex items-center cursor-pointer"
+                  >
+                    <span className={`block w-14 h-8 rounded-full transition ${privacy ? 'bg-green-500' : 'bg-gray-200'}`}></span>
+                    <span
+                      className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition transform ${privacy ? 'translate-x-6' : ''}`}
+                    ></span>
+                  </label>
+                  <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">
+                    Post private
+                  </label>
+                </p>
+              </div>
               <div className="flex items-center p-4 border-t border-gray-200 rounded-b">
                 <button
                   type="button"

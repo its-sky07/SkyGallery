@@ -6,17 +6,11 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 const Profile = () => {
   const context=useOutletContext()
-
-
-  // const { user } = useContext(userdetail);
   const [userPosts, setUserPosts] = useState([]);
   const [userdetail, setuserdetail] = useState([])
-
-
-  // const [image, setImage] = useState(userdetail.avatar);
-
-
+  const [loading, setloading] = useState(true)
   const navigate = useNavigate()
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -24,12 +18,7 @@ const Profile = () => {
       formData.append('profileimage', file);
 
       try {
-        const response = await axios.post('http://localhost:3000/user/uploadprofileimg', formData, { withCredentials: true });
-        const res = response.data;
-
-
-
-        // setImage(`${res.avatar}?t=${new Date().getTime()}`);
+         await axios.post('http://localhost:3000/user/uploadprofileimg', formData, { withCredentials: true });
         toast.success("Profile Image Updated Successfully");
 
       } catch (error) {
@@ -38,11 +27,6 @@ const Profile = () => {
       }
     }
   };
-
-
-
-
-
 
   useEffect(() => {
 
@@ -55,13 +39,13 @@ const Profile = () => {
       } catch (error) {
         console.error('Error fetching user posts', error);
         toast.error("Error fetching user posts.");
+      }finally{
+        setloading(false)
       }
     };
 
     fetchUserData();
   }, [userdetail]);
-
-
 
   const triggerFileInput = () => {
     document.getElementById('file-input').click();
@@ -84,7 +68,7 @@ const Profile = () => {
   const handleDeletePost = async (postId) => {
     try {
 
-      const res = await axios.delete(`http://localhost:3000/posts/${postId}`, { withCredentials: true })
+       await axios.delete(`http://localhost:3000/posts/${postId}`, { withCredentials: true })
       setUserPosts(userPosts.filter((post) => (post._id !== postId)))
       toast.success("Post deleted successfully")
       console.log("post deleted")
@@ -96,18 +80,17 @@ const Profile = () => {
     }
 
   }
-
   const opensinglepage = (postId) => {
-
-
     navigate(`/Singlepostpage/${postId}`)
-
   }
 
+  if (loading) return <div className="flex items-center justify-center min-h-screen">
+  <div className="w-20 h-20 border-4 border-blue-700 rounded-full border-dotted animate-spin"></div>
+</div>;
 
   return (
-    <div className="profile-page">
-      <div className="profile-header flex justify-start flex-col relative p-4 items-center mt-9">
+    <div className="profile-page ">
+      <div className="profile-header flex justify-start flex-col relative p-4 items-center mt-24  ">
         <div className='w-32 h-32 rounded-full relative'>
           <img src={userdetail.avatar} alt='Profile Picture' className='w-full h-full object-cover rounded-full' />
           <div onClick={triggerFileInput} className='p-3 bg-red-600 rounded-full absolute right-0 bottom-0 cursor-pointer'>
@@ -122,10 +105,10 @@ const Profile = () => {
         <form method='POST'>
           <input id="file-input" type="file" name='profileimage' onChange={handleFileChange} className="hidden" />
         </form>
-        <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute bottom-0 right-24 ' onClick={handleLogout}>Logout</button>
+        <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute top-0 right-24 ' onClick={handleLogout}>Logout</button>
 
         <Link to="/UploadPost">
-          <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute left-24 '>
+          <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute left-14 '>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 5V19M5 12H19" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -146,15 +129,14 @@ const Profile = () => {
                 </div>
                 <h2 className="text-xl font-medium title-font text-gray-900 mt-5">{item.title}</h2>
                 <p className="text-base leading-relaxed mt-2">{item.description}</p>
-                <a className="text-indigo-500 inline-flex items-center mt-3">Learn More
-                  <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
+              <p >
+                <Link to="#" className='flex text-red-700' onClick={() => opensinglepage(item._id)}>see more
+                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
                     <path d="M5 12h14M12 5l7 7-7 7"></path>
                   </svg>
-                </a>
+                  </Link>
 
-                <button className="text-red-500 inline-flex items-center mt-3" onClick={() => handleDeletePost(item._id)}>
-                  Delete Post
-                </button>
+                  </p> 
               </div>
             ))
           ) : (

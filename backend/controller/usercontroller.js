@@ -47,7 +47,7 @@ const Loginuser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ _id: user._id }, 'kY8h2fT7xvB3jW9nPm6zLqD5rA1sXoV4cUeNtHy2gJkZpM7vD', { expiresIn:"1d" });
+    const token = jwt.sign({ _id: user._id },process.env.JWT_SCERET_KEY, { expiresIn:"1d" });
   
   
     res.status(200).cookie('accesstoken', token, {
