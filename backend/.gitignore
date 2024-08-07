@@ -12,6 +12,7 @@ logs/
 *.log
 
 # Tailwind CSS config
+
 tailwind.config.js
 
 # Misc

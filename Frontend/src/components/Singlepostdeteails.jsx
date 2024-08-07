@@ -82,7 +82,7 @@ const SinglePostPage = () => {
     };
 
     fetchPost();
-  }, [postid, context.user, isliked, isModalOpen]);
+  }, [postid, context.user, isliked, isModalOpen ,comment]);
 
 
   const toggleModal = () => {
