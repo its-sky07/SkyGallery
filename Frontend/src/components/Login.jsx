@@ -8,7 +8,7 @@ import { userdetail } from '../Context/Context';
 function Login() {
   const { user, setuser } = useContext(userdetail)
   const context = useOutletContext()
-
+  const baseurl=import.meta.env.VITE_API_URL
   // const [isloggedin, setisloggedin] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
