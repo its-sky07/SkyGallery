@@ -17,7 +17,7 @@ dotenv.config()
 const app = express()
 app.use(cookieParser())
 app.use(cors({
-  origin: 'http://localhost:5173', // Don't use wildcard '*' instead specify frontend url
+  origin: 'https://theskygallery.netlify.app/', // Don't use wildcard '*' instead specify frontend url
   credentials: true
 }))
 

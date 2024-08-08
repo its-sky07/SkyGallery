@@ -12,12 +12,12 @@ function Home() {
     const [FilteredPosts, setFilteredPosts] = useState([])
     const [loading, setloading] = useState(true)
     const navigate = useNavigate()
-
+    const baseurl=import.meta.env.VITE_API_URL
     useEffect(() => {
 
         const fetchdata = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/posts')
+                const res = await axios.get(`${baseurl}/posts`)
                 setposts(res.data)
                 setFilteredPosts(res.data)
             }

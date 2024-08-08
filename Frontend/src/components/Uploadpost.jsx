@@ -11,7 +11,7 @@ const UploadPost = () => {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-
+  const baseurl=import.meta.env.VITE_API_URL;
   // Handle file selection
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -45,7 +45,7 @@ const UploadPost = () => {
     formData.append('privacy', privacy);
 
     try {
-      const response = await axios.post('http://localhost:3000/posts/upload', formData, { withCredentials: true });
+      const response = await axios.post(`${baseurl}/posts/upload`, formData, { withCredentials: true });
       toast.success("Post uploaded successfully");
       navigate("/profile");
       // Clear the form

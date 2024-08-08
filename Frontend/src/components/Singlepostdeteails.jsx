@@ -24,6 +24,7 @@ const SinglePostPage = () => {
 
 
 
+  const baseurl=import.meta.env.VITE_API_URL
 
 
   const navigate = useNavigate()
@@ -46,7 +47,7 @@ const SinglePostPage = () => {
         description: newDescription,
         privacy: privacy
       };
-      const response = await axios.put(`http://localhost:3000/posts/updatepostinfo/${postid}`, updatedPost, { withCredentials: true });
+      const response = await axios.put(`${baseurl}/posts/updatepostinfo/${postid}`, updatedPost, { withCredentials: true });
       setPost(response.data);
       toast.success("Post updated successfully!");
       toggleModal();
@@ -63,7 +64,7 @@ const SinglePostPage = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/posts/${postid}`, { withCredentials: true });
+        const response = await axios.get(`${baseurl}/posts/${postid}`, { withCredentials: true });
         setPost(response.data);
         setlikelength(response.data.likes.length);
 
@@ -92,7 +93,7 @@ const SinglePostPage = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/posts/${postid}/comment`, { withCredentials: true });
+        const response = await axios.get(`${baseurl}/posts/${postid}/comment`, { withCredentials: true });
         setAllComments(response.data);
       } catch (error) {
         console.error('Error fetching comments', error);
@@ -104,11 +105,11 @@ const SinglePostPage = () => {
   const handleComment = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3000/posts/${postid}/comment`, { text: comment }, { withCredentials: true });
+      await axios.post(`${baseurl}/posts/${postid}/comment`, { text: comment }, { withCredentials: true });
       setComment("");
       toast.success("Comment added successfully!");
       // Fetch comments again to display the new comment
-      const response = await axios.get(`http://localhost:3000/posts/${postid}/comment`, { withCredentials: true });
+      const response = await axios.get(`${baseurl}/posts/${postid}/comment`, { withCredentials: true });
       setAllComments(response.data);
     } catch (error) {
       console.error('Error adding comment', error);
@@ -124,7 +125,7 @@ const SinglePostPage = () => {
 
 
     try {
-      const res = await axios.delete(`http://localhost:3000/posts/${postid}/comment/${commentid}`, { withCredentials: true })
+      const res = await axios.delete(`${baseurl}/posts/${postid}/comment/${commentid}`, { withCredentials: true })
       if (res.status === 200) {
 
         setAllComments(prevComments => prevComments.filter(comment => comment._id !== commentid));
@@ -143,7 +144,7 @@ const SinglePostPage = () => {
   }
 
   const handledeletepost = async (postid) => {
-    await axios.delete(`http://localhost:3000/posts/${postid}`, { withCredentials: true })
+    await axios.delete(`${baseurl}/posts/${postid}`, { withCredentials: true })
     navigate("/profile")
 
   }
@@ -167,11 +168,11 @@ const SinglePostPage = () => {
   const handlelike = async () => {
     try {
       if (isliked) {
-        const dislike = await axios.post(`http://localhost:3000/posts/${postid}/unlikes`, {}, { withCredentials: true });
+        const dislike = await axios.post(`${baseurl}/posts/${postid}/unlikes`, {}, { withCredentials: true });
         toast.success(dislike.data);
 
       } else {
-        const like = await axios.post(`http://localhost:3000/posts/${postid}/likes`, {}, { withCredentials: true });
+        const like = await axios.post(`${baseurl}/posts/${postid}/likes`, {}, { withCredentials: true });
         toast.success(like.data);
 
       }

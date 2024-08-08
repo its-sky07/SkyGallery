@@ -11,6 +11,8 @@ const Profile = () => {
   const [loading, setloading] = useState(true)
   const navigate = useNavigate()
 
+  const baseurl=import.meta.env.VITE_API_URL
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -18,7 +20,7 @@ const Profile = () => {
       formData.append('profileimage', file);
 
       try {
-         await axios.post('http://localhost:3000/user/uploadprofileimg', formData, { withCredentials: true });
+         await axios.post(`${baseurl}/user/uploadprofileimg`, formData, { withCredentials: true });
         toast.success("Profile Image Updated Successfully");
 
       } catch (error) {
@@ -32,7 +34,7 @@ const Profile = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/user/posts', { withCredentials: true });
+        const response = await axios.get(`${baseurl}/user/posts`, { withCredentials: true });
         console.log('Fetched posts:', response.data); // Debugging line
         setUserPosts(response.data.post);
         setuserdetail(response.data);
@@ -54,7 +56,7 @@ const Profile = () => {
   const handleLogout = async () => {
 
     try {
-      await axios.get('http://localhost:3000/user/logout', { withCredentials: true });
+      await axios.get(`${baseurl}/user/logout`, { withCredentials: true });
       navigate('/login')
       context.setisloggedin(false)
 
@@ -68,7 +70,7 @@ const Profile = () => {
   const handleDeletePost = async (postId) => {
     try {
 
-       await axios.delete(`http://localhost:3000/posts/${postId}`, { withCredentials: true })
+       await axios.delete(`${baseurl}/posts/${postId}`, { withCredentials: true })
       setUserPosts(userPosts.filter((post) => (post._id !== postId)))
       toast.success("Post deleted successfully")
       console.log("post deleted")

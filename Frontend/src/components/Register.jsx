@@ -11,6 +11,7 @@ function Register() {
     password: ""
   });
 
+  const baseurl=import.meta.env.VITE_API_URL
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -27,7 +28,7 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:3000/user/register', formData);
+      await axios.post(`${baseurl}/user/register`, formData);
       toast.success('Registered successfully');
       navigate("/Login");
     } catch (error) {
