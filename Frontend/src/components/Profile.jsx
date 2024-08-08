@@ -108,7 +108,7 @@ const Profile = () => {
         <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute top-0 right-24 ' onClick={handleLogout}>Logout</button>
 
         <Link to="/UploadPost">
-          <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute left-14 '>
+          <button className='bg-red-600 p-3 rounded-xl flex text-white justify-start absolute left-10 '>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 5V19M5 12H19" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -121,7 +121,7 @@ const Profile = () => {
         <div className="flex flex-wrap justify-start p-5 items-center gap-3 mt-4">
           {userPosts.length > 0 ? (
             userPosts.map((item) => (
-              <div key={item._id} className="p-2 rounded-md md:w-80 h-2/4 bg-red-200 sm:mb-0 mb-6 m-1">
+              <div key={item._id} className="p-2 rounded-md sm:w-80 w-full h-2/4 bg-red-200 sm:mb-0 mb-6 m-1">
                 <div className="rounded-lg h-64 overflow-hidden">
                   <Link to="#" onClick={() => opensinglepage(item._id)}>
                     <img alt="content" className="object-cover object-center h-full w-full" src={item.imageUrl} />
