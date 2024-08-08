@@ -13,7 +13,7 @@ export default function App() {
 
 
 
-
+  const baseurl=import.meta.env.VITE_API_URL
   // const context =useOutletContext()
   const [search, setsearch] = useState("")
   const [user, setuser] = useState(null)
@@ -25,7 +25,7 @@ export default function App() {
     const fetchauth = async() => {
 
       try {
-       const res= await axios.get("http://localhost:3000/auth/user" ,{withCredentials:true})
+       const res= await axios.get(`${baseurl}/auth/user` ,{withCredentials:true})
        setuser(res.data)
       console.log(res.data)
       setisloggedin(true)
