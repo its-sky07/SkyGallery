@@ -53,7 +53,7 @@ const Loginuser = async (req, res) => {
     res.status(200).cookie('accesstoken', token, {
      // 15 minutes
       httpOnly:true, // make the cookie visible in the browser
-      secure: true, // Only set to true in production
+      secure: process.env.NODE_ENV === 'production', // Only set to true in production
       sameSite: 'none'  // set the same-site flag
     }).send(user);
 
