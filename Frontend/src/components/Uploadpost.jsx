@@ -9,43 +9,35 @@ const UploadPost = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [privacy, setPrivacy] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
-  const baseurl=import.meta.env.VITE_API_URL;
+  const baseurl = import.meta.env.VITE_API_URL;
   // Handle file selection
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
   // Validate form fields
-  const validateForm = () => {
-    if (!title || !description || !selectedFile) {
-      toast.error("Please fill in all fields and select a file.");
-      return false;
-    }
-    if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
-      toast.error("File size exceeds 5MB.");
-      return false;
-    }
-    return true;
-  };
+
+  if (!title || !description || !selectedFile) {
+    return toast.error("Please fill in all fields and select a file.");
+
+  }
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('post', selectedFile);
+  formData.append('privacy', privacy);
+
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('post', selectedFile);
-    formData.append('privacy', privacy);
+    setLoading(true)
 
     try {
-      const response = await axios.post(`${baseurl}/posts/upload`, formData, { withCredentials: true });
+      await axios.post(`${baseurl}/posts/upload`, formData, { withCredentials: true });
       toast.success("Post uploaded successfully");
       navigate("/profile");
       // Clear the form
@@ -101,13 +93,13 @@ const UploadPost = () => {
             />
           </div>
           <p className='flex gap-2 items-center'>
-            <input 
-              type="checkbox" 
-              name="checkprvcy" 
-              onChange={(e) => setPrivacy(e.target.checked)} 
-              id="checkprvcy" 
-              checked={privacy} 
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+            <input
+              type="checkbox"
+              name="checkprvcy"
+              onChange={(e) => setPrivacy(e.target.checked)}
+              id="checkprvcy"
+              checked={privacy}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="checkprvcy" className="block text-sm font-medium text-gray-600">Post private</label>
           </p>
