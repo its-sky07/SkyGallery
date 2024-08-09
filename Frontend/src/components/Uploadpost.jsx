@@ -24,17 +24,18 @@ const UploadPost = () => {
 
   }
 
-  const formData = new FormData();
-  formData.append('title', title);
-  formData.append('description', description);
-  formData.append('post', selectedFile);
-  formData.append('privacy', privacy);
 
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('post', selectedFile);
+    formData.append('privacy', privacy);
+  
 
     try {
       await axios.post(`${baseurl}/posts/upload`, formData, { withCredentials: true });
