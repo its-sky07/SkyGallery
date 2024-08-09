@@ -1,14 +1,14 @@
 
 import multer from 'multer'
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './public')
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null,`${Date.now()}-${file.originalname}`)
-    }
-  })
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'skygalleryfolder', // Specify a folder in Cloudinary
+    format: async (req, file) => 'jpg', // supports promises as well
+    public_id: (req, file) => Date.now() + '-' + file.originalname.split('.')[0],
+  },
+});
   
   export const upload = multer({ storage: storage })
