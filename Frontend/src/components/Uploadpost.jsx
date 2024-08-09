@@ -18,26 +18,27 @@ const UploadPost = () => {
   };
 
   // Validate form fields
+  
+  const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('post', selectedFile);
+    formData.append('privacy', privacy);
 
-  if (!title || !description || !selectedFile) {
-    return toast.error("Please fill in all fields and select a file.");
-
-  }
-
+  
 
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('post', selectedFile);
-    formData.append('privacy', privacy);
-  
-
     try {
+    if (!title || !description || !selectedFile) {
+      return toast.error("Please fill in all fields and select a file.");
+
+    }
+    setLoading(true)
+   
+   
       await axios.post(`${baseurl}/posts/upload`, formData, { withCredentials: true });
       toast.success("Post uploaded successfully");
       navigate("/profile");
