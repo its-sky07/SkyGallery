@@ -77,11 +77,11 @@ const profileimage = async (req, res) => {
   console.log(localAvatarPath);
 
   try {
-    const avatar = await uploadoncloudinary(localAvatarPath);
+    const avatar = await uploadoncloudinary(req.file.buffer);
 
     const user= await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
-        avatar: avatar 
+        avatar: avatar.url
       }
       
     })
