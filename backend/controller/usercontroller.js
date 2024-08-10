@@ -55,12 +55,12 @@ const Loginuser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    const token = jwt.sign({ _id: user._id },process.env.JWT_SCERET_KEY, { expiresIn:"1d" });
-  
-  
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SCERET_KEY, { expiresIn: "1d" });
+
+
     res.status(200).cookie('accesstoken', token, {
-     // 15 minutes
-      httpOnly:true, // make the cookie visible in the browser
+      // 15 minutes
+      httpOnly: true, // make the cookie visible in the browser
       secure: process.env.NODE_ENV === 'production', // Only set to true in production
       sameSite: 'none'  // set the same-site flag
     }).send(user);
@@ -69,7 +69,7 @@ const Loginuser = async (req, res) => {
       return res.status(400).send('Invalid email or password');
     }
 
-  
+
   } catch (err) {
     res.status(500).send('Error logging in user');
     console.error(err);
@@ -77,25 +77,22 @@ const Loginuser = async (req, res) => {
 };
 
 const profileimage = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded');
-  }
-
-  const localAvatarPath = req.file.path;
-  console.log(localAvatarPath);
-
   try {
-    const result = await cloudinary.uploader.upload(localAvatarPath , {
-      folder:'folder_name'
-   });
-    const user= await UserModel.findByIdAndUpdate(req.user._id, {
-      $set: {
-        avatar: result.secure_url
-      }
-      
-    })
-   await user.save()
+    if (!req.file) {
+      return res.status(400).send('No file uploaded');
+    }
+
+    // res.status(200).send(req.file.path);
+
    
+    const user = await UserModel.findByIdAndUpdate(req.user._id, {
+      $set: {
+        avatar:req.file.path
+      }
+
+    })
+    await user.save()
+
 
     console.log(req.user._id);
     return res.status(200).send(user);
@@ -106,9 +103,9 @@ const profileimage = async (req, res) => {
 };
 
 
-const userpost=async(req,res)=>{
-  const user=await usermodel.findById(req.user._id).populate("post").select("-password ")
- 
+const userpost = async (req, res) => {
+  const user = await usermodel.findById(req.user._id).populate("post").select("-password ")
+
   return res.send(user)
 
 }
@@ -116,16 +113,16 @@ const userpost=async(req,res)=>{
 const logoutuser = (req, res) => {
   console.log('Logout request received');
 
-   res.status(200).clearCookie('accesstoken', {
-      httpOnly:true, // make the cookie visible in the browser
-      secure:true, // Only set to true in production
-      sameSite: 'none' 
-    })  
+  res.status(200).clearCookie('accesstoken', {
+    httpOnly: true, // make the cookie visible in the browser
+    secure: true, // Only set to true in production
+    sameSite: 'none'
+  })
     .json({ message: 'Logged out successfully' });
- 
+
 };
 
 
 
 
-export { registerUser, Loginuser, profileimage,userpost,logoutuser };
+export { registerUser, Loginuser, profileimage, userpost, logoutuser };
