@@ -8,6 +8,12 @@ import { Comment } from "../models/comment.js";
 // import { compareSync } from "bcrypt";
 
 
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
+});
 const Allpost = async (req, res) => {
   try {
     const posts = await Post.find({ private: false }).populate("user"); // Adjust the fields to be populated as needed
@@ -29,34 +35,48 @@ const addpost = async (req, res) => {
     return res.status(500).send("File not found");
   }
 
-  const localpostPath = req.file.path;
-
   try {
-    // Upload image to Cloudinary
-    const result = await cloudinary.uploader.upload(localpostPath, {
-      folder: 'skyposts', // Optional: specify a folder in your Cloudinary account
-    });
+    // Upload the file buffer directly to Cloudinary
+    const result = await cloudinary.uploader.upload_stream(
+      {
+        folder: 'skyposts', // Optional: specify a folder in your Cloudinary account
+      },
+      (error, result) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).send('Error uploading post');
+        }
 
-    const user = await usermodel.findById(req.user._id);
+        // Create a new post with the Cloudinary URL
+        const postdata = new Post({
+          title: title,
+          description: description,
+          imageUrl: result.secure_url, // Use the Cloudinary URL
+          private: privacy,
+          user: req.user._id,
+        });
 
-    // Create a new post with the Cloudinary URL
-    const postdata = new Post({
-      title: title,
-      description: description,
-      imageUrl: result.secure_url, // Use the Cloudinary URL
-      private: privacy,
-      user: req.user._id,
-    });
+        postdata.save()
+          .then(async (savedPost) => {
+            const finalpost = await Post.findById(savedPost._id).populate("user");
 
-    await postdata.save();
+            const user = await usermodel.findById(req.user._id);
+            user.post.push(savedPost._id);
+            await user.save();
 
-    const finalpost = await Post.findById(postdata._id).populate("user");
+            console.log(finalpost);
+            return res.status(200).send(finalpost);
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error saving post');
+          });
+      }
+    );
 
-    user.post.push(postdata._id);
-    await user.save();
+    // Pipe the file buffer to Cloudinary
+    result.end(req.file.buffer);
 
-    console.log(finalpost);
-    return res.status(200).send(finalpost);
   } catch (err) {
     res.status(500).send('Error uploading post');
     console.error(err);
