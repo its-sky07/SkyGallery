@@ -32,7 +32,7 @@ const addpost = async (req, res) => {
 
   }
   const localpostPath = req.file.path;
-  //  console.log(localAvatarPath);
+   console.log(localAvatarPath);
   const user = await usermodel.findById(req.user._id)
   try {
     // const post = await uploadOnCloudinary(localpostPath);

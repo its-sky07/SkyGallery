@@ -1,17 +1,17 @@
 import UserModel from '../models/usermodel.js';
 import bcrypt from 'bcrypt';
-import uploadoncloudinary from '../util/cloudinary.js';
+// import uploadoncloudinary from '../util/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import usermodel from '../models/usermodel.js';
-import { v2 as cloudinary } from 'cloudinary';
+// import { v2 as cloudinary } from 'cloudinary';
 
 
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
+// });
 const registerUser = async (req, res) => {
   const { username, fullname, email, password } = req.body;
 
