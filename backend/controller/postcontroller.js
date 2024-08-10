@@ -31,18 +31,18 @@ const addpost = async (req, res) => {
     return res.status(500).send("file not found")
 
   }
-  const localpostPath = req.file.path;
+  // const localpostPath = req.file.path;
   //  console.log(localAvatarPath);
   const user = await usermodel.findById(req.user._id)
   try {
-    const post = await uploadOnCloudinary(localpostPath);
+    // const post = await uploadOnCloudinary(localpostPath);
 
 
 
     const postdata = new Post({
       title: title,
       description: description,
-      imageUrl: post,
+      imageUrl: req.file.path,
       private: privacy,
       user: req.user._id
     })
@@ -54,7 +54,7 @@ const addpost = async (req, res) => {
     await user.save()
 
 
-    //  console.log(req.user._id);
+     console.log(finalpost);
     return res.status(200).send(finalpost);
   } catch (err) {
     res.status(500).send('Error uploading avatar');

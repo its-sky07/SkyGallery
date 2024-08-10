@@ -11,7 +11,7 @@ cloudinary.config({
   const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'your-folder-name', // Optional: specify folder to store images
+      folder: 'Home', // Optional: specify folder to store images
       format: async () => 'jpg', // Optional: specify format of uploaded images
       public_id: (req, file) => file.originalname.split('.')[0], // Optional: use original file name
     },
