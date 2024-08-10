@@ -28,58 +28,52 @@ const addpost = async (req, res) => {
   const { title, description, privacy } = req.body;
 
   if (!title || !description) {
-    return res.status(500).send("All fields are required");
+    return res.status(400).send("All fields are required");
   }
 
   if (!req.file) {
-    return res.status(500).send("File not found");
+    return res.status(400).send("File not found");
   }
 
   try {
-    // Upload the file buffer directly to Cloudinary
-    const result = await cloudinary.uploader.upload_stream(
-      {
-        folder: 'skyposts', // Optional: specify a folder in your Cloudinary account
-      },
-      (error, result) => {
-        if (error) {
-          console.error(error);
-          return res.status(500).send('Error uploading post');
+    // Upload the file buffer directly to Cloudinary using a promise
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'your_folder_name' }, // Optional: specify a folder in your Cloudinary account
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
         }
+      );
 
-        // Create a new post with the Cloudinary URL
-        const postdata = new Post({
-          title: title,
-          description: description,
-          imageUrl: result.secure_url, // Use the Cloudinary URL
-          private: privacy,
-          user: req.user._id,
-        });
+      stream.end(req.file.buffer); // Pipe the file buffer to Cloudinary
+    });
 
-        postdata.save()
-          .then(async (savedPost) => {
-            const finalpost = await Post.findById(savedPost._id).populate("user");
+    // Create a new post with the Cloudinary URL
+    const postdata = new Post({
+      title,
+      description,
+      imageUrl: uploadResult.secure_url, // Use the Cloudinary URL
+      private: privacy,
+      user: req.user._id,
+    });
 
-            const user = await usermodel.findById(req.user._id);
-            user.post.push(savedPost._id);
-            await user.save();
+    await postdata.save();
 
-            console.log(finalpost);
-            return res.status(200).send(finalpost);
-          })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error saving post');
-          });
-      }
-    );
+    const finalpost = await Post.findById(postdata._id).populate("user");
 
-    // Pipe the file buffer to Cloudinary
-    result.end(req.file.buffer);
+    const user = await usermodel.findById(req.user._id);
+    user.post.push(postdata._id);
+    await user.save();
 
+    console.log(finalpost);
+    return res.status(200).send(finalpost);
   } catch (err) {
-    res.status(500).send('Error uploading post');
     console.error(err);
+    return res.status(500).send('Error uploading post');
   }
 };
 
