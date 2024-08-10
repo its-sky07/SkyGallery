@@ -39,7 +39,7 @@ const addpost = async (req, res) => {
     // Upload the file buffer directly to Cloudinary using a promise
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: 'your_folder_name' }, // Optional: specify a folder in your Cloudinary account
+        { folder: 'yskyposts' }, // Optional: specify a folder in your Cloudinary account
         (error, result) => {
           if (error) {
             reject(error);
