@@ -37,7 +37,7 @@ const addpost = async (req, res) => {
 
   try {
     // Event-driven stream handling
-    const stream = cloudinary.uploader.upload_stream(
+    const stream = cloudinary.v2.uploader.upload_stream(
       { folder: 'your_folder_name' }, // Optional: specify a folder in your Cloudinary account
       async (error, result) => {
         if (error) {
