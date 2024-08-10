@@ -1,7 +1,7 @@
 
 
 import Post from "../models/postmodel.js";
-import uploadOnCloudinary from "../middleware/Multer.js";
+// import uploadOnCloudinary from "../middleware/Multer.js";
 import usermodel from "../models/usermodel.js";
 // import { set } from "mongoose";
 import { Comment } from "../models/comment.js";
