@@ -1,5 +1,5 @@
 
-
+import cloudinary from 'cloudinary'
 import Post from "../models/postmodel.js";
 // import uploadOnCloudinary from "../middleware/Multer.js";
 import usermodel from "../models/usermodel.js";
@@ -19,49 +19,50 @@ const Allpost = async (req, res) => {
 };
 
 const addpost = async (req, res) => {
+  const { title, description, privacy } = req.body;
 
-  const { title, description, privacy } = req.body
-
-  if (!title && !description) {
-    return res.status(500).send("all fiels required")
-
-
+  if (!title || !description) {
+    return res.status(500).send("All fields are required");
   }
+
   if (!req.file) {
-    return res.status(500).send("file not found")
-
+    return res.status(500).send("File not found");
   }
+
   const localpostPath = req.file.path;
-   console.log(localAvatarPath);
-  const user = await usermodel.findById(req.user._id)
+
   try {
-    // const post = await uploadOnCloudinary(localpostPath);
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(localpostPath, {
+      folder: 'skyposts', // Optional: specify a folder in your Cloudinary account
+    });
 
+    const user = await usermodel.findById(req.user._id);
 
-
+    // Create a new post with the Cloudinary URL
     const postdata = new Post({
       title: title,
       description: description,
-      imageUrl: localpostPath,
+      imageUrl: result.secure_url, // Use the Cloudinary URL
       private: privacy,
-      user: req.user._id
-    })
+      user: req.user._id,
+    });
 
-    await postdata.save()
-    const finalpost = await Post.findById(postdata._id).populate("user")
+    await postdata.save();
 
-    user.post.push(postdata._id)
-    await user.save()
+    const finalpost = await Post.findById(postdata._id).populate("user");
 
+    user.post.push(postdata._id);
+    await user.save();
 
-     console.log(finalpost);
+    console.log(finalpost);
     return res.status(200).send(finalpost);
   } catch (err) {
-    res.status(500).send('Error uploading avatar');
+    res.status(500).send('Error uploading post');
     console.error(err);
   }
+};
 
-}
 
 
 const deletepost = async (req, res) => {
