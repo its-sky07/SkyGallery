@@ -11,10 +11,36 @@ cloudinary.config({
   const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'Home', // Optional: specify folder to store images
+      folder: 'postimages', // Optional: specify folder to store images
       format: async () => 'jpg', // Optional: specify format of uploaded images
       public_id: (req, file) => file.originalname.split('.')[0], // Optional: use original file name
     },
   });
   
   export const upload = multer({ storage: storage })
+
+  
+
+
+const uploadOnCloudinary = async (avatarLocalPath) => {
+  try {
+      if (!avatarLocalPath) {
+          return null;
+      }
+      const result = await cloudinary.uploader.upload(avatarLocalPath);
+      // Handle success response
+      console.log((result.url));
+      
+      return result.url;
+  } catch (error) {
+      // Handle error response
+      console.error(error);
+      
+      return null;
+      ;
+  }
+
+
+};
+
+export default uploadOnCloudinary;

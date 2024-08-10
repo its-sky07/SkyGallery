@@ -31,18 +31,18 @@ const addpost = async (req, res) => {
     return res.status(500).send("file not found")
 
   }
-  // const localpostPath = req.file.path;
+  const localpostPath = req.file.path;
   //  console.log(localAvatarPath);
   const user = await usermodel.findById(req.user._id)
   try {
-    // const post = await uploadOnCloudinary(localpostPath);
+    const post = await uploadOnCloudinary(localpostPath);
 
 
 
     const postdata = new Post({
       title: title,
       description: description,
-      imageUrl: req.file.path,
+      imageUrl: post,
       private: privacy,
       user: req.user._id
     })
