@@ -22,25 +22,25 @@ cloudinary.config({
   
 
 
-const uploadOnCloudinary = async (avatarLocalPath) => {
-  try {
-      if (!avatarLocalPath) {
-          return null;
-      }
-      const result = await cloudinary.uploader.upload(avatarLocalPath);
-      // Handle success response
-      console.log((result.url));
+// const uploadOnCloudinary = async (avatarLocalPath) => {
+//   try {
+//       if (!avatarLocalPath) {
+//           return null;
+//       }
+//       const result = await cloudinary.uploader.upload(avatarLocalPath);
+//       // Handle success response
+//       console.log((result.url));
       
-      return result.url;
-  } catch (error) {
-      // Handle error response
-      console.error(error);
+//       return result.url;
+//   } catch (error) {
+//       // Handle error response
+//       console.error(error);
       
-      return null;
-      ;
-  }
+//       return null;
+//       ;
+//   }
 
 
-};
+// };
 
-export default uploadOnCloudinary;
+// export default uploadOnCloudinary;

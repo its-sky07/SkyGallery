@@ -35,14 +35,14 @@ const addpost = async (req, res) => {
   //  console.log(localAvatarPath);
   const user = await usermodel.findById(req.user._id)
   try {
-    const post = await uploadOnCloudinary(localpostPath);
+    // const post = await uploadOnCloudinary(localpostPath);
 
 
 
     const postdata = new Post({
       title: title,
       description: description,
-      imageUrl: post,
+      imageUrl: localpostPath,
       private: privacy,
       user: req.user._id
     })
