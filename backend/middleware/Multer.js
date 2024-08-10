@@ -11,7 +11,7 @@ cloudinary.config({
   const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'postimages', // Optional: specify folder to store images
+      folder: 'skyposts', // Optional: specify folder to store images
       format: async () => 'jpg', // Optional: specify format of uploaded images
       public_id: (req, file) => file.originalname.split('.')[0], // Optional: use original file name
     },
