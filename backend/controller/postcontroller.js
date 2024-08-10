@@ -36,44 +36,47 @@ const addpost = async (req, res) => {
   }
 
   try {
-    // Upload the file buffer directly to Cloudinary using a promise
-    const uploadResult = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'yskyposts' }, // Optional: specify a folder in your Cloudinary account
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
+    // Event-driven stream handling
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'your_folder_name' }, // Optional: specify a folder in your Cloudinary account
+      async (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          return res.status(500).send("Error uploading post");
         }
-      );
 
-      stream.end(req.file.buffer); // Pipe the file buffer to Cloudinary
-    });
+        // Create a new post with the Cloudinary URL
+        const postdata = new Post({
+          title,
+          description,
+          imageUrl: result.secure_url, // Use the Cloudinary URL
+          private: privacy,
+          user: req.user._id,
+        });
 
-    // Create a new post with the Cloudinary URL
-    const postdata = new Post({
-      title,
-      description,
-      imageUrl: uploadResult.secure_url, // Use the Cloudinary URL
-      private: privacy,
-      user: req.user._id,
-    });
+        try {
+          await postdata.save();
 
-    await postdata.save();
+          const finalpost = await Post.findById(postdata._id).populate("user");
 
-    const finalpost = await Post.findById(postdata._id).populate("user");
+          const user = await usermodel.findById(req.user._id);
+          user.post.push(postdata._id);
+          await user.save();
 
-    const user = await usermodel.findById(req.user._id);
-    user.post.push(postdata._id);
-    await user.save();
+          console.log(finalpost);
+          return res.status(200).send(finalpost);
+        } catch (saveError) {
+          console.error("Post saving error:", saveError);
+          return res.status(500).send("Error saving post");
+        }
+      }
+    );
 
-    console.log(finalpost);
-    return res.status(200).send(finalpost);
+    // Pipe the file buffer to Cloudinary
+    stream.end(req.file.buffer);
   } catch (err) {
-    console.error(err);
-    return res.status(500).send('Error uploading post');
+    console.error("Unexpected error:", err);
+    return res.status(500).send('Unexpected error uploading post');
   }
 };
 
