@@ -1,20 +1,22 @@
 
-import cloudinary from 'cloudinary'
+// import {v2 as cloudinary} from 'cloudinary'
 import Post from "../models/postmodel.js";
-// import uploadOnCloudinary from "../middleware/Multer.js";
+import uploadOnCloudinary from "../util/cloudinary.js";
 import usermodel from "../models/usermodel.js";
 // import { set } from "mongoose";
+// import streamifier from 'streamifier';
 import { Comment } from "../models/comment.js";
 // import { compareSync } from "bcrypt";
 
 
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
+// });
 const Allpost = async (req, res) => {
+ 
   try {
     const posts = await Post.find({ private: false }).populate("user"); // Adjust the fields to be populated as needed
     res.status(200).json(posts);
@@ -35,51 +37,38 @@ const addpost = async (req, res) => {
     return res.status(400).send("File not found");
   }
 
+  // console.log('File Path:', req.file.path); // Debug: Check if the file path is available
+
   try {
-    // Event-driven stream handling
-    const stream = cloudinary.v2.uploader.upload_stream(
-      { folder: 'your_folder_name' }, // Optional: specify a folder in your Cloudinary account
-      async (error, result) => {
-        if (error) {
-          console.error("Cloudinary upload error:", error);
-          return res.status(500).send("Error uploading post");
-        }
+    const url = await uploadOnCloudinary(req.file.buffer);
+    console.log('Cloudinary URL:', url); // Debug: Check if URL is obtained from Cloudinary
 
-        // Create a new post with the Cloudinary URL
-        const postdata = new Post({
-          title,
-          description,
-          imageUrl: result.secure_url, // Use the Cloudinary URL
-          private: privacy,
-          user: req.user._id,
-        });
+    if (!url) {
+      return res.status(500).send('Error uploading image');
+    }
 
-        try {
-          await postdata.save();
+    const postdata = new Post({
+      title,
+      description,
+      imageUrl: url, // Use the Cloudinary URL
+      private: privacy,
+      user: req.user._id,
+    });
 
-          const finalpost = await Post.findById(postdata._id).populate("user");
+    await postdata.save();
 
-          const user = await usermodel.findById(req.user._id);
-          user.post.push(postdata._id);
-          await user.save();
+    const finalpost = await Post.findById(postdata._id).populate("user");
+    const user = await usermodel.findById(req.user._id);
+    user.post.push(postdata._id);
+    await user.save();
 
-          console.log(finalpost);
-          return res.status(200).send(finalpost);
-        } catch (saveError) {
-          console.error("Post saving error:", saveError);
-          return res.status(500).send("Error saving post");
-        }
-      }
-    );
+    return res.status(200).send(finalpost);
 
-    // Pipe the file buffer to Cloudinary
-    stream.end(req.file.buffer);
   } catch (err) {
-    console.error("Unexpected error:", err);
-    return res.status(500).send('Unexpected error uploading post');
+    console.error('Error during the process:', err);
+    return res.status(500).send('Error uploading post');
   }
 };
-
 
 
 const deletepost = async (req, res) => {
