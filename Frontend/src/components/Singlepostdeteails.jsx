@@ -149,23 +149,40 @@ const SinglePostPage = () => {
 
   }
 
-  const downloadImage = (imageUrl) => {
+  const downloadImage = async (imageUrl) => {
     try {
-      const link = document.createElement('a');
-      link.href = imageUrl;
-      link.download = 'image.jpg';
+      // Fetch the image as a Blob
+      const response = await fetch(imageUrl, {
+        mode: 'cors', // Ensure CORS is handled if needed
+      });
   
-      // Append the link to the document and trigger the download
+      // If the response is not ok, throw an error
+      if (!response.ok) {
+        throw new Error('Image download failed');
+      }
+  
+      // Convert the response to a Blob
+      const blob = await response.blob();
+  
+      // Create a temporary URL for the Blob
+      const url = window.URL.createObjectURL(blob);
+  
+      // Create an anchor element and trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'image.jpg';
       document.body.appendChild(link);
       link.click();
   
-      // Remove the link from the document
+      // Clean up by revoking the object URL and removing the link
+      window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading the image', error);
       toast.error('Error downloading the image.');
     }
   };
+  
   
   
   const handlelike = async () => {
