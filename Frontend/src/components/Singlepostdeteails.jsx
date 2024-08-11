@@ -149,37 +149,24 @@ const SinglePostPage = () => {
 
   }
 
-  const downloadImage = async (imageUrl) => {
+  const downloadImage = (imageUrl) => {
     try {
-      const response = await axios.get(imageUrl, {
-        responseType: 'blob',
-      });
-  
-      // Create a new Blob object using the response data of the file
-      const blob = new Blob([response.data]);
-  
-      // Create a link element
       const link = document.createElement('a');
-  
-      // Create a URL for the Blob and set it as the href attribute of the link
-      const url = window.URL.createObjectURL(blob);
-      link.href = url;
-  
-      // Set the download attribute of the link to the desired file name
+      link.href = imageUrl;
       link.download = 'image.jpg';
   
-      // Append the link to the document body and trigger the download
+      // Append the link to the document and trigger the download
       document.body.appendChild(link);
       link.click();
   
-      // Remove the link from the document and revoke the Blob URL
+      // Remove the link from the document
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading the image', error);
       toast.error('Error downloading the image.');
     }
   };
+  
   
   const handlelike = async () => {
     try {
