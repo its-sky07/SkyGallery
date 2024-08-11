@@ -152,7 +152,8 @@ const SinglePostPage = () => {
   const downloadImage = async (imageUrl) => {
     try {
       // Fetch the image as a Blob
-      const response = await fetch(imageUrl, {
+      const secureImageUrl = imageUrl.replace(/^http:\/\//i, 'https://');
+      const response = await fetch(secureImageUrl, {
         mode: 'cors', // Ensure CORS is handled if needed
       });
   
