@@ -1,20 +1,9 @@
 
-// import {v2 as cloudinary} from 'cloudinary'
 import Post from "../models/postmodel.js";
 import uploadOnCloudinary from "../util/cloudinary.js";
 import usermodel from "../models/usermodel.js";
-// import { set } from "mongoose";
-// import streamifier from 'streamifier';
 import { Comment } from "../models/comment.js";
-// import { compareSync } from "bcrypt";
 
-
-
-// cloudinary.config({
-//   cloud_name: process.env.CLOUD_NAME,
-//   api_key: process.env.API_KEY,
-//   api_secret: process.env.API_SECRET // Hardcoded for now, ensure to secure this in production
-// });
 const Allpost = async (req, res) => {
  
   try {
@@ -88,23 +77,13 @@ const deletepost = async (req, res) => {
 
     await Post.findByIdAndDelete(postid)
     return res.status(200).send("post deleted")
-
-
-
-
-
   } catch (error) {
     res.status(500).send("error deleting post")
     console.error("post not deleted")
 
   }
 
-
-
-
 }
-
-
 const postinfo = async (req, res) => {
   const postid = req.params.id
 
@@ -112,10 +91,6 @@ const postinfo = async (req, res) => {
   if (!post) return res.status(404).send("post not found")
 
   res.status(200).send(post)
-
-
-
-
 }
 const updatepostinfo = async (req, res) => {
   const postid = req.params.id
@@ -148,11 +123,7 @@ const postcomment = async (req, res) => {
     text: text,
     user: req.user._id,
     post: postid,
-    
-
   })
-
-
   await commentog.save()
   const post= await Post.findById(postid)
   post.comments.push(commentog._id)
@@ -168,9 +139,6 @@ const userpostcomment = async (req, res) => {
   const com = await Comment.find({ post: postid }).populate("user")
   console.log(com)
   res.status(200).send(com)
-
-
-
 }
 
 const userpostlike = async (req, res) => {
@@ -198,9 +166,6 @@ const userpostunlike = async (req, res) => {
   post.likes = post.likes.filter((user) => user.toString() !== req.user._id.toString());
   await post.save()
   res.status(200).send("post unliked")
-
-
-
 }
 
 
