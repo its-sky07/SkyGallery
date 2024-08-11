@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 // import uploadoncloudinary from '../util/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import usermodel from '../models/usermodel.js';
+import uploadOnCloudinary from '../util/cloudinary.js';
 // import { v2 as cloudinary } from 'cloudinary';
 
 
@@ -81,13 +82,16 @@ const profileimage = async (req, res) => {
     if (!req.file) {
       return res.status(400).send('No file uploaded');
     }
+    const url = await uploadOnCloudinary(req.file.buffer);
+    console.log('Cloudinary URL:', url); // Debug: Check if URL is obtained from Cloudinary
 
-    // res.status(200).send(req.file.path);
-
+    if (!url) {
+      return res.status(500).send('Error uploading image');
+    }
    
     const user = await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
-        avatar:req.file.path
+        avatar:url
       }
 
     })
