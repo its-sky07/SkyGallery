@@ -80,7 +80,7 @@ const SinglePostPage = () => {
         console.log(response.data);
       } catch (error) {
         console.error('Error fetching post', error);
-        toast.error("Error fetching post.");
+        // toast.error("Error fetching post.");
         navigate("/login")
       } finally {
         setloading(false)
