@@ -33,7 +33,7 @@ const Profile = () => {
     };
     useEffect(() => {
      handleFileChange()
-    }, [])
+    }, [userdetail])
     
     
  
