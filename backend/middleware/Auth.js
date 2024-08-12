@@ -4,7 +4,7 @@ import UserModel from '../models/usermodel.js';
 const verifytoken =async(req, res, next) => {
     
     try {
-        const token = req.cookies.accesstoken
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
         // console.log(token);
     if (!token) {
         return res.status(401).send('Unauthorized: No token provided');
