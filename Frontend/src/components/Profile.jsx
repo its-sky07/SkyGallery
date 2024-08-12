@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
@@ -14,7 +14,7 @@ const Profile = () => {
 
   const baseurl = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
+ 
     const handleFileChange = async (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -31,8 +31,12 @@ const Profile = () => {
         }
       }
     };
-    handleFileChange()
-  }, [])
+    useEffect(() => {
+     handleFileChange()
+    }, [])
+    
+    
+ 
   
 
  
@@ -66,17 +70,6 @@ const Profile = () => {
       toast.success("Logout successfully");
     } catch (error) {
       toast.error('Unable to logout');
-    }
-  };
-
-  const handleDeletePost = async (postId) => {
-    try {
-      await axios.delete(`${baseurl}/posts/${postId}`, { withCredentials: true });
-      setUserPosts(userPosts.filter((post) => post._id !== postId));
-      toast.success("Post deleted successfully");
-    } catch (error) {
-      console.error("Error deleting post", error);
-      toast.error("Unable to delete post");
     }
   };
 
