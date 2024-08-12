@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaEyeSlash } from "react-icons/fa";
+import { FaEyeSlash ,FaEye} from "react-icons/fa";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -92,7 +92,7 @@ function Register() {
                 onChange={handleChange}
                 className="w-full h-12 my-1 p-3 text-sm text-gray-700 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200"
               />
-              <FaEyeSlash onClick={handlepassword} className='p-2 hover:' size={50} />
+              {(password)?<FaEye className='p-2 ' size={50}/>:<FaEyeSlash onClick={handlepassword} className='p-2 ' size={50} />}
               </div>
               <button
                 type="submit"

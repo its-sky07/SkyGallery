@@ -2,9 +2,10 @@ import { useState } from 'react'
 import axios from 'axios'
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import toast from 'react-hot-toast'
-import { useContext } from 'react';
-import { userdetail } from '../Context/Context';
+// import { useContext } from 'react';
+// import { userdetail } from '../Context/Context';
 import { FaEyeSlash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 
 function Login() {
   // const { user, setuser } = useContext(userdetail)
@@ -92,7 +93,7 @@ const [password, setpassword] = useState(true)
                 onChange={handleChange}
                 className="w-full h-12 my-1 p-3 text-sm text-gray-700 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200"
                  />
-                 <FaEyeSlash onClick={handlepassword} className='p-2 hover:' size={50} />
+                 {(password)?<FaEye className='p-2 ' size={50}/>:<FaEyeSlash onClick={handlepassword} className='p-2 ' size={50} />}
 </div>
              
 
