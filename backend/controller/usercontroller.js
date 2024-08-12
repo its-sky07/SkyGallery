@@ -92,7 +92,7 @@ const profileimage = async (req, res) => {
     const user = await UserModel.findByIdAndUpdate(req.user._id, {
       $set: {
         avatar:url
-      }
+      },new:true
 
     })
     await user.save()
