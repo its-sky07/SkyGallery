@@ -49,7 +49,7 @@ function Home() {
 
     if (loading) return <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, index) => (
+            {[...Array(15)].map((_, index) => (
                 <SkeletonLoader key={index} />
             ))}
         </div>
@@ -57,15 +57,20 @@ function Home() {
 
     return (
         <>
+        {(posts.length)?
              <div className="container mx-auto px-4 py-8 mt-20">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {posts.map((item, index) => (
                         <div key={index} className= "h-96 bg-white rounded-lg overflow-hidden shadow-md">
-                            <Link to="#" onClick={() => handlepostinfo(item._id)}>   <img src={item.imageUrl} alt="Placeholder" className="w-full h-full object-cover" /></Link>
+                            <Link to="#" onClick={() => handlepostinfo(item._id)}>   <img src={item.imageUrl} alt="Placeholder" className="w-full h-full object-cover object-center" /></Link>
                         </div>
                     ))}
                 </div>
-            </div>
-        </>)
+            </div>: <div className="flex flex-col items-center justify-center text-center p-10 bg-gray-100 rounded-md w-full">
+    {/* <MdEdit className="text-6xl text-gray-400 mb-4" /> */}
+    <h3 className="text-xl mt-20 font-semibold text-gray-600">No posts uploaded yet</h3>
+    <p className="text-gray-500">Start by uploading your first post!</p>
+  </div>
+  }  </>)
 }
 export default Home

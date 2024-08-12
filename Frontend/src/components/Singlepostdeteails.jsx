@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { FaArrowAltCircleLeft, FaArrowAltCircleDown } from "react-icons/fa";
+// import { FaArrowAltCircleDown } from "react-icons/fa";
+
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 const SinglePostPage = () => {
@@ -21,10 +24,11 @@ const SinglePostPage = () => {
   const [deletepostid, setdeletepostid] = useState(null)
   const [opendeletepostmodal, setopendeletepostmodal] = useState(false)
   const [privacy, setprivacy] = useState(true)
+  const [loadingcom, setloadingcom] = useState(null)
 
 
 
-  const baseurl=import.meta.env.VITE_API_URL
+  const baseurl = import.meta.env.VITE_API_URL
 
 
   const navigate = useNavigate()
@@ -77,13 +81,14 @@ const SinglePostPage = () => {
       } catch (error) {
         console.error('Error fetching post', error);
         toast.error("Error fetching post.");
+        navigate("login")
       } finally {
         setloading(false)
       }
     };
 
     fetchPost();
-  }, [postid, context.user, isliked, isModalOpen ,comment]);
+  }, [postid, context.user, isliked, isModalOpen]);
 
 
   const toggleModal = () => {
@@ -104,8 +109,10 @@ const SinglePostPage = () => {
 
   const handleComment = async (e) => {
     e.preventDefault();
+    setloadingcom(true)
     try {
       await axios.post(`${baseurl}/posts/${postid}/comment`, { text: comment }, { withCredentials: true });
+
       setComment("");
       toast.success("Comment added successfully!");
       // Fetch comments again to display the new comment
@@ -114,6 +121,8 @@ const SinglePostPage = () => {
     } catch (error) {
       console.error('Error adding comment', error);
       toast.error("Error adding comment.");
+    } finally {
+      setloadingcom(false)
     }
   };
 
@@ -156,25 +165,25 @@ const SinglePostPage = () => {
       const response = await fetch(secureImageUrl, {
         mode: 'cors', // Ensure CORS is handled if needed
       });
-  
+
       // If the response is not ok, throw an error
       if (!response.ok) {
         throw new Error('Image download failed');
       }
-  
+
       // Convert the response to a Blob
       const blob = await response.blob();
-  
+
       // Create a temporary URL for the Blob
       const url = window.URL.createObjectURL(blob);
-  
+
       // Create an anchor element and trigger the download
       const link = document.createElement('a');
       link.href = url;
       link.download = 'image.jpg';
       document.body.appendChild(link);
       link.click();
-  
+
       // Clean up by revoking the object URL and removing the link
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
@@ -183,9 +192,9 @@ const SinglePostPage = () => {
       toast.error('Error downloading the image.');
     }
   };
-  
-  
-  
+
+
+
   const handlelike = async () => {
     try {
       if (isliked) {
@@ -234,84 +243,61 @@ const SinglePostPage = () => {
   }
 
   return (
+
     <div className="flex justify-center items-center min-h-screen w-full  bg-gray-100">
 
 
-      <button onClick={handleBack} className='absolute top-20 left-32 bg-blue-600 p-2 rounded-lg  text-white'>
-        <p className='flex align-middle justify-center'> <svg
-          // Example event handler
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="w-8 h-8"
-        >
-          <path
-            d="M19 12H5M12 19l-7-7 7-7"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg><p className='font-medium '>back</p></p>
-       
+      <button onClick={handleBack} className='absolute top-24 left-8  text-white'>
+        <p className='flex align-middle justify-center'> <FaArrowAltCircleLeft color='blue' size={40} /></p>
+
 
       </button>
-      <div className=" p-5 rounded-md bg-white sm:flex mt-14 gap-4 shadow-md w-full max-w-5xl">
+      <div className=" p-5 rounded-md bg-white sm:flex mt-32  gap-4 shadow-md w-full max-w-5xl">
         <div className=" sm:w-3/5 w-full">
           {Post.imageUrl && (
             <div className="post-image w-full h-64 mb-4 ">
-              <img src={Post.imageUrl} alt="Post" className="w-full h-full object-cover rounded-md" />
+              <img src={Post.imageUrl} alt="Post" className="w-full h-full object-cover object-center rounded-md" />
             </div>
           )}
-          <div className=" justify-end mb-4 flex gap-2">
-
-
-            {/* like */}
-
-            {(isliked) ? <svg
-              onClick={handlelike}
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="red"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              />
-            </svg> : <svg
-              onClick={handlelike}
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
+          <div className='flex mt-5'> {(isliked) ? <svg
+            onClick={handlelike}
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="red"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            />
+          </svg> : <svg
+            onClick={handlelike}
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12.1 18.55L12 18.65l-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 2.89-3.14 5.74-7.9 10.05z"
+              stroke="currentColor"
+              strokeWidth="2"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12.1 18.55L12 18.65l-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 2.89-3.14 5.74-7.9 10.05z"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>}
+            />
+          </svg>}
             {likelength}
+          </div>
+          <div className=" justify-end  flex gap-4">
+
+
+
+
+
 
             {/* downloadbutton */}
-            <svg
-              onClick={() => downloadImage(Post.imageUrl)}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-8 h-8"
-            >
-              <path
-                d="M12 2v14m0 0l-4-4m4 4l4-4M4 20h16"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+
+
+            <FaArrowAltCircleDown size={30} color='blue' className='animate-bounce' onClick={() => downloadImage(Post.imageUrl)} />
 
             {/* deletebutton */}
 
@@ -336,14 +322,9 @@ const SinglePostPage = () => {
             }
 
 
-
-
-
-
-
           </div>
           <h2 className="text-2xl font-bold mb-2">{Post.title}</h2>
-          <p className="text-gray-700 mb-4">{Post.description}</p>
+          <p className="text-gray-700 mb-4 break-words">{Post.description}</p>
           {Post.user && <p className="text-gray-500 mb-4">Posted by: <span className="text-blue-700 font-semibold">{Post.user.fullname}</span></p>}
           <div className="flex items-center mb-4">
             <form onSubmit={handleComment} className="flex items-center w-full">
@@ -354,20 +335,27 @@ const SinglePostPage = () => {
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Write your comment"
               />
+              <button
+                type="submit"
+                disabled={loadingcom}
+                className="ml-2 bg-blue-700 text-white p-2 rounded-lg"
+                onClick={handleComment}
+              >
+                {(loadingcom) ? "......." : "Comment"}
+              </button>
             </form>
-            <button
-              type="submit"
-              className="ml-2 bg-blue-700 text-white p-2 rounded-lg"
-              onClick={handleComment}
-            >
-              Post
-            </button>
+
           </div>
         </div>
         <div className="sm:w-1/2 flex flex-col sp  w-full">
           <h2 className="font-bold text-2xl mb-4">Comments</h2>
 
-          {(allComments.length <= 0) ? "no comment on this post" : <div className="h-96 overflow-y-scroll scroll-smooth pr-4">
+          {(allComments.length <= 0) ? <div className="flex flex-col items-center justify-center w-full h-48 bg-gray-100 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12 text-gray-500 mb-4">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m-2 8h8.586l2.707-2.707A1 1 0 0 0 21 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h2v2z" />
+            </svg>
+            <p className="text-gray-500 text-lg ">No comments on this post.</p>
+          </div> : <div className="h-96 overflow-y-scroll scroll-smooth pr-4">
             {allComments.map((item) => (
               <div key={item._id} className="bg-gray-100 rounded-xl flex justify-evenly gap-2 p-4 mb-4">
                 <div className="h-7 w-7 rounded-full overflow-hidden">
@@ -423,17 +411,18 @@ const SinglePostPage = () => {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-4 ">
                 <input
                   type="text"
                   placeholder="Enter new title"
                   className="w-full p-2 border border-gray-300 rounded-md"
-                  value={newTitle}
+                  value={newTitle||Post.title}
                   required
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
                 <textarea
-                  value={newDescription}
+                className="break-words"
+                  value={newDescription||Post.description}
                   onChange={(e) => setNewDescription(e.target.value)}
                   name="description"
                   id="description"
