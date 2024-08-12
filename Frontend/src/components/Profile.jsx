@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
@@ -8,53 +8,45 @@ import { MdEdit } from 'react-icons/md';
 const Profile = () => {
   const context = useOutletContext();
   const [userPosts, setUserPosts] = useState([]);
-  const [userdetail, setUserDetail] = useState([]);
+  const [userdetail, setUserDetail] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const baseurl = import.meta.env.VITE_API_URL;
 
- 
-    const handleFileChange = async (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('profileimage', file);
-  
-        
-        try {
-          await axios.post(`${baseurl}/user/uploadprofileimg`, formData, { withCredentials: true });
-          toast.success("Profile Image Updated Successfully");
-        } catch (error) {
-          console.error('Error uploading file', error);
-          toast.error("Error uploading profile image.");
-        }
-      }
-    };
-    useEffect(() => {
-     handleFileChange()
-    }, [userdetail])
-    
-    
- 
-  
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${baseurl}/user/posts`, { withCredentials: true });
+      setUserPosts(response.data.post);
+      setUserDetail(response.data);
+    } catch (error) {
+      console.error('Error fetching user posts', error);
+      toast.error("Error fetching user posts.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
- 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('profileimage', file);
+
+      try {
+        await axios.post(`${baseurl}/user/uploadprofileimg`, formData, { withCredentials: true });
+        toast.success("Profile Image Updated Successfully");
+
+        // Fetch the updated user data after uploading the image
+        fetchUserData();
+      } catch (error) {
+        console.error('Error uploading file', error);
+        toast.error("Error uploading profile image.");
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`${baseurl}/user/posts`, { withCredentials: true });
-        setUserPosts(response.data.post);
-        setUserDetail(response.data);
-      } catch (error) {
-        console.error('Error fetching user posts', error);
-        toast.error("Error fetching user posts.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserData();
   }, []);
 
@@ -77,11 +69,13 @@ const Profile = () => {
     navigate(`/Singlepostpage/${postId}`);
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-20 h-20 border-4 border-blue-700 rounded-full border-dotted animate-spin"></div>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-20 h-20 border-4 border-blue-700 rounded-full border-dotted animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page p-4 sm:p-8">
@@ -98,8 +92,8 @@ const Profile = () => {
         <form method="POST">
           <input id="file-input" type="file" name="profileimage" onChange={handleFileChange} className="hidden" />
         </form>
-        <button className="bg-red-600 p-2 sm:p-3 rounded-full flex items-center text-white absolute top-0 right-5 sm:right-24" >
-          <FaSignOutAlt onClick={handleLogout}  />
+        <button className="bg-red-600 p-2 sm:p-3 rounded-full flex items-center text-white absolute top-0 right-5 sm:right-24">
+          <FaSignOutAlt onClick={handleLogout} />
         </button>
 
         <Link to="/UploadPost">
@@ -110,7 +104,7 @@ const Profile = () => {
       </div>
 
       <div className="profile-posts mt-12">
-        <div className="grid gap-6 mt-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+        <div className="grid gap-6 mt-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {userPosts.length > 0 ? (
             userPosts.map((item) => (
               <div key={item._id} className="bg-gray-100 p-4 rounded-lg shadow-lg hover:shadow-xl mt-3 transition-shadow duration-300">

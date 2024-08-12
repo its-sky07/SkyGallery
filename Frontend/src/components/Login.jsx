@@ -109,7 +109,7 @@ const [password, setpassword] = useState(true)
 
             <footer className="mt-4">
               <p className="text-xs mb-2 opacity-70">
-                By continuing, you agree to Pinterests{" "}
+                By continuing, you agree to SkyGallery{" "}
                 <b>Terms of Service, SkyGallery policy.</b>
               </p>
               <hr className="w-1/2 mx-auto opacity-40" />
