@@ -14,21 +14,28 @@ const Profile = () => {
 
   const baseurl = import.meta.env.VITE_API_URL;
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append('profileimage', file);
-
-      try {
-        await axios.post(`${baseurl}/user/uploadprofileimg`, formData, { withCredentials: true });
-        toast.success("Profile Image Updated Successfully");
-      } catch (error) {
-        console.error('Error uploading file', error);
-        toast.error("Error uploading profile image.");
+  useEffect(() => {
+    const handleFileChange = async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('profileimage', file);
+  
+        
+        try {
+          await axios.post(`${baseurl}/user/uploadprofileimg`, formData, { withCredentials: true });
+          toast.success("Profile Image Updated Successfully");
+        } catch (error) {
+          console.error('Error uploading file', error);
+          toast.error("Error uploading profile image.");
+        }
       }
-    }
-  };
+    };
+    handleFileChange()
+  }, [])
+  
+
+ 
 
   useEffect(() => {
     const fetchUserData = async () => {
