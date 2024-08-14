@@ -4,8 +4,8 @@ import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
-  api_key: '887464156598416',
-  api_secret: 'qY8KDgiWmA1ji2RDikjIQ4dHB3I' // Ensure this is securely managed in production
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET // Ensure this is securely managed in production
 });
 
 const uploadOnCloudinary = async (buffer) => {
