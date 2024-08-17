@@ -47,13 +47,13 @@ function Home() {
     }
 
 
-    if (loading) return <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(15)].map((_, index) => (
-                <SkeletonLoader key={index} />
-            ))}
-        </div>
+    if (loading) return  <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative w-24 h-24">
+      <div className="absolute inset-0 border-4 border-t-4 border-t-blue-500 rounded-full animate-spin"></div>
+      <div className="absolute inset-0 border-4 border-b-4 border-b-red-500 rounded-full animate-spin-reverse"></div>
+      <div className="absolute inset-0 w-16 h-16 bg-white rounded-full"></div>
     </div>
+  </div>
 
     return (
         <>
