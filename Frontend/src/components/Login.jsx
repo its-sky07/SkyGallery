@@ -43,7 +43,7 @@ const [password, setpassword] = useState(true)
       console.log(response.data)
       // setuser(response.data)
 
-      if (response.status==200) {
+      if (response.ok) {
         toast.success("login succesfully")
         navigate("/")
         context.setisloggedin(true)
