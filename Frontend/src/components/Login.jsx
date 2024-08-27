@@ -6,6 +6,8 @@ import toast from 'react-hot-toast'
 // import { userdetail } from '../Context/Context';
 import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../Firebass/Firebass';
 
 function Login() {
   // const { user, setuser } = useContext(userdetail)
@@ -67,6 +69,18 @@ const [password, setpassword] = useState(true)
     setpassword(!password)
 
   }
+
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            console.log("User info:", user);
+            // Handle the signed-in user's information (e.g., save to state or database)
+        })
+        .catch((error) => {
+            console.error("Error during sign-in:", error);
+        });
+};
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-500">
@@ -107,6 +121,9 @@ const [password, setpassword] = useState(true)
                 Sign In
               </button>
             </form>
+            <button onClick={handleGoogleSignIn}>
+                Sign in with Google
+            </button>
 
             
 
