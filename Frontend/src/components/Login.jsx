@@ -13,6 +13,7 @@ function Login() {
   // const { user, setuser } = useContext(userdetail)
   const context = useOutletContext()
   const baseurl=import.meta.env.VITE_API_URL
+ const navigate= useNavigate()
   // const [isloggedin, setisloggedin] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
@@ -75,6 +76,8 @@ const [password, setpassword] = useState(true)
         .then((result) => {
             const user = result.user;
             console.log("User info:", user);
+            navigate('/')
+
             // Handle the signed-in user's information (e.g., save to state or database)
         })
         .catch((error) => {
