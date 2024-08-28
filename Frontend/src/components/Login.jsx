@@ -6,14 +6,13 @@ import toast from 'react-hot-toast'
 // import { userdetail } from '../Context/Context';
 import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../Firebass/Firebass';
+
 
 function Login() {
   // const { user, setuser } = useContext(userdetail)
   const context = useOutletContext()
   const baseurl=import.meta.env.VITE_API_URL
- const navigate= useNavigate()
+
   // const [isloggedin, setisloggedin] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
@@ -71,19 +70,7 @@ const [password, setpassword] = useState(true)
 
   }
 
-  const handleGoogleSignIn = () => {
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            console.log("User info:", user);
-            navigate('/')
-
-            // Handle the signed-in user's information (e.g., save to state or database)
-        })
-        .catch((error) => {
-            console.error("Error during sign-in:", error);
-        });
-};
+ 
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-500">
@@ -124,9 +111,7 @@ const [password, setpassword] = useState(true)
                 Sign In
               </button>
             </form>
-            <button onClick={handleGoogleSignIn}>
-                Sign in with Google
-            </button>
+           
 
             
 
