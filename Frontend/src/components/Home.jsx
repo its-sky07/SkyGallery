@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import SkeletonLoader from "../loaders/homelosder";
@@ -62,7 +62,7 @@ function Home() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {posts.map((item, index) => (
                         <div key={index} className= "h-96 bg-white rounded-lg overflow-hidden shadow-md">
-                            <Link to="#" onClick={() => handlepostinfo(item._id)}>   <img src={item.imageUrl} alt="Placeholder" className="w-full h-full object-cover object-center" /></Link>
+                            <Link to="#" onClick={() => handlepostinfo(item._id)}>   <img src={item.imageUrl} loading={lazy} alt="Placeholder" className="w-full h-full object-cover object-center" /></Link>
                         </div>
                     ))}
                 </div>

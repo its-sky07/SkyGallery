@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
@@ -110,7 +110,7 @@ const Profile = () => {
               <div key={item._id} className="bg-gray-100 p-4 rounded-lg shadow-lg hover:shadow-xl mt-3 transition-shadow duration-300">
                 <div className="rounded-lg overflow-hidden">
                   <Link to="#" onClick={() => openSinglePage(item._id)}>
-                    <img alt="content" className="object-cover object-center h-48 w-full" src={item.imageUrl} />
+                    <img alt="content" loading={lazy} className="object-cover object-center h-48 w-full" src={item.imageUrl} />
                   </Link>
                 </div>
                 <h2 className="text-xl font-medium text-gray-800 mt-4">{item.title}</h2>
