@@ -2,14 +2,15 @@ import React, { lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
-import Register from './components/Register.jsx'
-import Login from './components/Login.jsx'
+
 import App from './App.jsx'
-// import Home from 
-import Profile from './components/Profile.jsx'
-import UploadPost from './components/Uploadpost.jsx'
-import Singlepostpage from './components/Singlepostdeteails.jsx'
+
 const Home =lazy(()=>import('./components/Home.jsx'))
+const Register =lazy(()=>import('./components/Register.jsx'))
+const Profile =lazy(()=>import('./components/Profile.jsx'))
+const Login =lazy(()=>import('./components/Login.jsx'))
+const UploadPost =lazy(()=>import('./components/Uploadpost.jsx'))
+const Singlepostpage =lazy(()=>import('./components/Singlepostdeteails.jsx'))
 
 
 
