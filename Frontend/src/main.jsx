@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import Register from './components/Register.jsx'
 import Login from './components/Login.jsx'
 import App from './App.jsx'
-import Home from './components/Home.jsx'
+// import Home from 
 import Profile from './components/Profile.jsx'
 import UploadPost from './components/Uploadpost.jsx'
 import Singlepostpage from './components/Singlepostdeteails.jsx'
+const Home =lazy(()=>import('./components/Home.jsx'))
 
 
 
